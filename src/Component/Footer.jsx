@@ -1,51 +1,102 @@
 // src/components/Footer.jsx
 import React from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaXTwitter,
+  FaEnvelope,
+  FaPhone,
+  FaLocationDot
+} from "react-icons/fa6";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-400 py-8 border-t border-gray-800">
+    <footer className="bg-gray-900 text-gray-400 py-10 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Contact Info */}
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          
+          {/* Company Info */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-3">Contact Us</h3>
-            <p>mrjabedpuc@gmail.com</p>
-            <p>+8801521....... PET-CARE</p>
-            <p>123 Chittagong Chawkbazar</p>
+            <h3 className="text-white text-xl font-semibold mb-4">HomeNest</h3>
+            <p className="text-sm leading-relaxed">
+              Your trusted partner in finding dream homes, rentals, and commercial 
+              properties across Bangladesh.
+            </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-3">Quick Links</h3>
-            <ul className="space-y-2">
+            <h3 className="text-white text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:text-yellow-400">Home</Link></li>
-              <li><Link to="/services" className="hover:text-yellow-400">Services</Link></li>
-              <li><Link to="/about" className="hover:text-yellow-400">About</Link></li>
+              <li><Link to="/properties" className="hover:text-yellow-400">All Properties</Link></li>
+              <li><Link to="/add-property" className="hover:text-yellow-400">Post a Property</Link></li>
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Contact Info */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-3">Legal</h3>
-            <ul className="space-y-2">
-              <li><Link to="/privacy" className="hover:text-yellow-400">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-yellow-400">Terms of Service</Link></li>
+            <h3 className="text-white text-lg font-semibold mb-4">Contact</h3>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-center gap-2">
+                <FaEnvelope className="text-yellow-400" />
+                info@homenest.example.com
+              </li>
+              <li className="flex items-center gap-2">
+                <FaPhone className="text-yellow-400" />
+                +88017XX-XXXXXX
+              </li>
+              <li className="flex items-start gap-3">
+                <FaLocationDot className="text-yellow-400 mt-1" />
+                Dhaka, Bangladesh
+              </li>
             </ul>
           </div>
 
-          {/* Social Links */}
+          {/* Social & Legal */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-3">Follow Us</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="hover:text-yellow-400">Facebook</a>
-              <a href="#" className="hover:text-yellow-400">Twitter</a>
-              <a href="#" className="hover:text-yellow-400">Instagram</a>
+            <h3 className="text-white text-lg font-semibold mb-4">Follow Us</h3>
+            <div className="flex space-x-5 mb-4 text-gray-400">
+              <a
+                href="https://facebook.com/yourhomenest"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-yellow-400 transition"
+              >
+                <FaFacebook size={22} />
+              </a>
+              <a
+                href="https://x.com/yourhomenest"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-yellow-400 transition"
+              >
+                <FaXTwitter size={22} />
+              </a>
+              <a
+                href="https://instagram.com/yourhomenest"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-yellow-400 transition"
+              >
+                <FaInstagram size={22} />
+              </a>
             </div>
+
+            <Link
+              to="/terms"
+              className="text-sm hover:text-yellow-400 transition"
+            >
+              Terms & Conditions
+            </Link>
           </div>
         </div>
-        <div className="mt-8 pt-6 border-t border-gray-800 text-center">
-          &copy; {new Date().getFullYear()} PetWinterCare. All rights reserved.
+
+        {/* Bottom */}
+        <div className="mt-10 pt-6 border-t border-gray-800 text-center text-sm">
+          &copy; {new Date().getFullYear()} HomeNest. All rights reserved.
         </div>
       </div>
     </footer>

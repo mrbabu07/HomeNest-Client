@@ -1,37 +1,45 @@
 // src/Pages/AllProperties.jsx
 import React, { useState, useEffect } from 'react';
-import { fetchProperties } from '../services/api'; // আপনার API সার্ভিস
-import PropertyCard from '../Component/PropertyCard'; // আপনার Property Card component
-import { FaSpinner } from 'react-icons/fa'; // লোডিং স্পিনারের জন্য
-import { FaSortAmountDown, FaSortAmountUp, FaSearch } from 'react-icons/fa'; // চ্যালেঞ্জ আইকন
+import PropertyCard from '../Component/PropertyCard';
+import { FaSpinner, FaSearch } from 'react-icons/fa';
+import axios from 'axios';
 
 const AllProperties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // Challenge: Search & Sort
+
+  // Search & Sort
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('dateAdded');
   const [sortOrder, setSortOrder] = useState('desc');
 
-  useEffect(() => {
-    const getProperties = async () => {
-      try {
-        setLoading(true);
-        // পরামিতি পাঠানো হচ্ছে: search, sort, order
-        const data = await fetchProperties({ search: searchTerm, sort: sortOption, order: sortOrder });
-        setProperties(data);
-      } catch (err) {
-        console.error("Error fetching all properties:", err);
-        setError('Failed to load properties.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch properties from backend
+  const getProperties = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get('http://localhost:3000/getServices', {
+        params: {
+          search: searchTerm,
+          sortField: sortOption,
+          sortOrder: sortOrder,
+        },
+      });
+      setProperties(res.data);
+    } catch (err) {
+      setError('Failed to fetch properties.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // searchTerm, sortOption, sortOrder এর কোনো একটি পরিবর্তন হলে ফাংশনটি আবার চলবে
-    getProperties();
-  }, [searchTerm, sortOption, sortOrder]); // এই ভ্যালুগুলোর উপর নির্ভর করে আবার fetch করা হবে
+  // Fetch properties whenever search/sort changes
+  useEffect(() => {
+    const timer = setTimeout(() => getProperties(), 300); // debounce search
+    return () => clearTimeout(timer);
+  }, [searchTerm, sortOption, sortOrder]);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -47,7 +55,7 @@ const AllProperties = () => {
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">All Properties</h2>
 
-      {/* Challenge: Search & Sort Controls */}
+      {/* Search & Sort Controls */}
       <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <label htmlFor="searchInput" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -65,6 +73,7 @@ const AllProperties = () => {
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
         </div>
+
         <div className="w-full md:w-48">
           <label htmlFor="sortSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Sort By
@@ -83,24 +92,34 @@ const AllProperties = () => {
         </div>
       </div>
 
+      {/* Loading */}
       {loading && (
         <div className="flex justify-center items-center h-64">
           <FaSpinner className="animate-spin text-4xl text-blue-500" />
         </div>
       )}
+
+      {/* Error */}
       {error && <p className="text-center text-red-500 p-4">{error}</p>}
+
+      {/* Properties List */}
       {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map(property => (
-            <PropertyCard
-              key={property._id}
-              property={{ ...property, showPostedBy: true }} // showPostedBy true করে পাঠানো হচ্ছে
-            />
-          ))}
-        </div>
-      )}
-      {!loading && !error && properties.length === 0 && (
-        <p className="text-center text-gray-500 dark:text-gray-400">No properties found matching your search.</p>
+        <>
+          {properties.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {properties.map((property) => (
+                <PropertyCard
+                  key={property._id}
+                  property={{ ...property, showPostedBy: true }}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              No properties found matching your search.
+            </p>
+          )}
+        </>
       )}
     </div>
   );
