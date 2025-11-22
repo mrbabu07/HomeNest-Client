@@ -9,35 +9,43 @@ const AllProperties = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Search & Sort
+  // Search and Sort
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('dateAdded');
   const [sortOrder, setSortOrder] = useState('desc');
 
-  // Fetch properties from backend
-  const getProperties = async () => {
+  // Function to get properties from server
+  const getProperties = () => {
     setLoading(true);
     setError(null);
-    try {
-      const res = await axios.get('http://localhost:3000/getServices', {
+
+    axios
+      .get('http://localhost:3000/getServices', {
         params: {
+          
           search: searchTerm,
           sortField: sortOption,
           sortOrder: sortOrder,
         },
+      })
+      .then((res) => {
+        setProperties(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError('Failed to fetch properties.');
+        setLoading(false);
       });
-      setProperties(res.data);
-    } catch (err) {
-      setError('Failed to fetch properties.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
   };
 
-  // Fetch properties whenever search/sort changes
+  // Fetch properties whenever search term or sort changes
   useEffect(() => {
-    const timer = setTimeout(() => getProperties(), 300); // debounce search
+    // small delay so search is smoother
+    const timer = setTimeout(() => {
+      getProperties();
+    }, 300);
+
     return () => clearTimeout(timer);
   }, [searchTerm, sortOption, sortOrder]);
 
@@ -53,12 +61,17 @@ const AllProperties = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">All Properties</h2>
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">
+        All Properties
+      </h2>
 
-      {/* Search & Sort Controls */}
+      {/* Search and Sort controls */}
       <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col md:flex-row gap-4">
         <div className="flex-1">
-          <label htmlFor="searchInput" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="searchInput"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Search by Property Name
           </label>
           <div className="relative">
@@ -68,21 +81,24 @@ const AllProperties = () => {
               placeholder="Search properties..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full p-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
         </div>
 
         <div className="w-full md:w-48">
-          <label htmlFor="sortSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="sortSelect"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Sort By
           </label>
           <select
             id="sortSelect"
             value={`${sortOption}_${sortOrder}`}
             onChange={handleSortChange}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="price_asc">Price: Low to High</option>
             <option value="price_desc">Price: High to Low</option>
@@ -102,7 +118,7 @@ const AllProperties = () => {
       {/* Error */}
       {error && <p className="text-center text-red-500 p-4">{error}</p>}
 
-      {/* Properties List */}
+      {/* Properties list */}
       {!loading && !error && (
         <>
           {properties.length > 0 ? (
