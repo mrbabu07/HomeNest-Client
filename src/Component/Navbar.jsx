@@ -57,6 +57,9 @@ const Navbar = () => {
                 <NavLink to="/my-ratings" className={navLinkClass}>
                   <span className="flex items-center gap-1"><Star size={16} /> My Ratings</span>
                 </NavLink>
+                <NavLink to="/update-property" className={navLinkClass}>
+                  <span className="flex items-center gap-1"><Star size={16} /> Update Property</span>
+                </NavLink>
               </>
             )}
           </div>

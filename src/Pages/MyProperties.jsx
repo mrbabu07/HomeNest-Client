@@ -1,131 +1,234 @@
-// Pages/MyProperties.jsx
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AuthContext from '../Context/AuthContext'; // আপনার কনটেক্সট পাথ ম্যাচ করুন
-import { fetchProperties, deleteProperty } from '../services/api'; // আপনার API সার্ভিস পাথ ম্যাচ করুন
-import { toast } from 'react-toastify'; // ধরে নিচ্ছি আপনি react-toastify ব্যবহার করছেন
-import { FaSpinner } from 'react-icons/fa'; // লোডিং স্পিনারের জন্য
+import React, { useEffect, useState, useContext } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import AuthContext from "../Context/AuthContext";
+import { FaSpinner, FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const MyProperties = () => {
-  const { user, loading: authLoading } = useContext(AuthContext); // AuthContext থেকে ইউজার নিন
+  const { user } = useContext(AuthContext);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
+  // Fetch properties
   useEffect(() => {
-    if (authLoading) return; // Auth loading চলছে তাহলে আর কিছু করবে না
+    if (!user?.email) return;
 
-    if (!user) {
-      // লগইন না করলে প্রাইভেট রুট এর মতো কাজ করবে (App.js এর PrivateRoute এর মাধ্যমে হওয়া উচিত, তবু এখানেও চেক করা যেতে পারে)
-      navigate('/login');
-      return;
-    }
-
-    const getMyProperties = async () => {
-      try {
-        setLoading(true);
-        // সার্ভারে এমন একটা API হতে হবে যেখানে userEmail দিলে সেই ইউজারের প্রোপার্টি পাওয়া যাবে
-        // এখন সব প্রোপার্টি ফেচ করে ক্লায়েন্ট-সাইডে ফিল্টার করছি, এটি সার্ভারে করা উচিত।
-        const allProperties = await fetchProperties();
-        const userProperties = allProperties.filter(p => p.userEmail === user.email);
-        setProperties(userProperties);
-      } catch (err) {
-        console.error("Error fetching my properties:", err);
-        setError('Failed to load your properties.');
-      } finally {
+    setLoading(true);
+    axios
+      .get(`${API_BASE_URL}/allServices`, { params: { email: user.email } })
+      .then((res) => {
+        setProperties(res.data);
         setLoading(false);
-      }
-    };
+      })
+      .catch(() => {
+        toast.error("Couldn't load your properties.");
+        setLoading(false);
+      });
+  }, [user]);
 
-    getMyProperties();
-  }, [user, authLoading, navigate]);
-
+  // Delete handler
   const handleDelete = async (id) => {
-    // কনফার্মেশন ডায়লগ (toast ব্যবহার করে না, SweetAlert ব্যবহার করতে হবে)
-    // ধরে নিচ্ছি SweetAlert2 ব্যবহার করছেন
-    // import Swal from 'sweetalert2';
-    // const result = await Swal.fire({
-    //   title: 'Are you sure?',
-    //   text: "You won't be able to revert this!",
-    //   icon: 'warning',
-    //   showCancelButton: true,
-    //   confirmButtonColor: '#3085d6',
-    //   cancelButtonColor: '#d33',
-    //   confirmButtonText: 'Yes, delete it!'
-    // });
-    // if (result.isConfirmed) { ... }
-
-    // অথবা react-toastify এর confirm নেই। আপনি চাইলে একটা কাস্টম মডাল ব্যবহার করতে পারেন।
-    // এখানে সাধারণ কনফার্মেশন ব্যবহার করছি।
-    const confirmed = window.confirm("Are you sure you want to delete this property? This action cannot be undone.");
-    if (!confirmed) return;
-
+    if (!window.confirm("Are you sure you want to delete this property?")) return;
     try {
-      await deleteProperty(id); // API কল
-      // ডিলিট হলে UI থেকে সরানো
-      setProperties(properties.filter(property => property._id !== id));
-      toast.success('Property deleted successfully!');
-    } catch (error) {
-      console.error("Error deleting property:", error);
-      toast.error('Failed to delete property. Please try again.');
+      await axios.delete(`${API_BASE_URL}/deleteService/${id}`);
+      setProperties((prev) => prev.filter((p) => p._id !== id));
+      toast.success("Property deleted successfully!");
+    } catch {
+      toast.error("Failed to delete property.");
     }
   };
 
-  if (authLoading || loading) {
+  if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
+      <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900">
+        <FaSpinner className="animate-spin text-5xl text-blue-600 dark:text-blue-400" />
       </div>
     );
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500 p-4">{error}</div>;
-  }
 
   return (
-    <div className="my-properties-page p-6">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">My Properties</h2>
-      {properties.length === 0 ? (
-        <p className="text-center text-gray-500">You haven't listed any properties yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map(property => (
-            <div key={property._id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-              <img src={property.imageURL} alt={property.name} className="w-full h-48 object-cover" />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800">{property.name}</h3>
-                <p className="text-blue-600 font-medium">{property.category}</p>
-                <p className="text-gray-600 truncate">📍 {property.location}</p>
-                <p className="text-gray-800 font-bold">💰 ${property.price}</p>
-                <p className="text-sm text-gray-500 mt-1">📅 {new Date(property.dateAdded).toLocaleDateString()}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <button
-                    onClick={() => navigate(`/property/${property._id}`)}
-                    className="text-sm bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md"
-                  >
-                    View Details
-                  </button>
-                  {/* Update button এখানে যোগ করতে পারেন, তবে EditProperty.jsx তৈরি করতে হবে */}
-                  {/* <button
-                    onClick={() => navigate(`/edit-property/${property._id}`)}
-                    className="text-sm bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-md"
-                  >
-                    Update
-                  </button> */}
-                  <button
-                    onClick={() => handleDelete(property._id)}
-                    className="text-sm bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
+            My Properties
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            Manage all your listed properties
+          </p>
         </div>
-      )}
+
+        {properties.length === 0 ? (
+          <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="text-6xl mb-4 text-gray-400 dark:text-gray-600">🏠</div>
+            <h3 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              No Properties Yet
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
+              Start by adding your first property
+            </p>
+            <Link
+              to="/add-property"
+              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition"
+            >
+              Add Property
+            </Link>
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-100 dark:bg-gray-700">
+                  <tr className="text-gray-900 dark:text-gray-200">
+                    <th className="p-4 text-left font-semibold">Image</th>
+                    <th className="p-4 text-left font-semibold">Name</th>
+                    <th className="p-4 text-left font-semibold">Category</th>
+                    <th className="p-4 text-left font-semibold">Price</th>
+                    <th className="p-4 text-left font-semibold">Location</th>
+                    <th className="p-4 text-center font-semibold">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {properties.map((p) => (
+                    <tr
+                      key={p._id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <td className="p-4">
+                        <img
+                          src={p.imageURL}
+                          alt={p.name}
+                          className="h-16 w-24 object-cover rounded-lg shadow"
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/150";
+                          }}
+                        />
+                      </td>
+
+                      <td className="p-4">
+                        <div className="font-semibold text-gray-900 dark:text-gray-100">
+                          {p.name}
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          p.category === "Rent"
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                            : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        }`}>
+                          {p.category}
+                        </span>
+                      </td>
+
+                      <td className="p-4 font-bold text-gray-900 dark:text-gray-100">
+                        ৳{p.price?.toLocaleString()}
+                      </td>
+
+                      <td className="p-4 text-gray-700 dark:text-gray-300">
+                        {p.location}
+                      </td>
+
+                      <td className="p-4">
+                        <div className="flex justify-center gap-2">
+                          <Link
+                            to={`/property/${p._id}`}
+                            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition"
+                            title="View"
+                          >
+                            <FaEye />
+                          </Link>
+
+                          <Link
+                            to={`/update-property/${p._id}`}
+                            className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition"
+                            title="Edit"
+                          >
+                            <FaEdit />
+                          </Link>
+
+                          <button
+                            onClick={() => handleDelete(p._id)}
+                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition"
+                            title="Delete"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+              {properties.map((p) => (
+                <div key={p._id} className="p-4">
+                  <div className="flex gap-4">
+                    <img
+                      src={p.imageURL}
+                      alt={p.name}
+                      className="h-24 w-32 object-cover rounded-lg shadow"
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/150";
+                      }}
+                    />
+                    
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                        {p.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        {p.location}
+                      </p>
+                      <p className="font-bold text-gray-900 dark:text-gray-100">
+                        ৳{p.price?.toLocaleString()}
+                      </p>
+                      <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${
+                        p.category === "Rent"
+                          ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                          : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      }`}>
+                        {p.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 mt-4">
+                    <Link
+                      to={`/property/${p._id}`}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white text-center rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition"
+                    >
+                      View
+                    </Link>
+
+                    <Link
+                      to={`/update-property/${p._id}`}
+                      className="flex-1 px-4 py-2 bg-green-600 text-white text-center rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition"
+                    >
+                      Edit
+                    </Link>
+
+                    <button
+                      onClick={() => handleDelete(p._id)}
+                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
