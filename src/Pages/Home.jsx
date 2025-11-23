@@ -12,7 +12,7 @@ import "aos/dist/aos.css";
 
 import PropertyCard from "../Component/PropertyCard";
 
-// ✅ Correct FA6 Icons (FaHome does not exist in fa6)
+// Correct FA6 Icons
 import {
   FaHouse,
   FaMoneyBillWave,
@@ -30,74 +30,91 @@ const Home = () => {
     fetchFeaturedProperties();
   }, []);
 
-  const fetchFeaturedProperties = async () => {
-    try {
-      setLoading(true);
-      const API_BASE_URL =
-        import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  // --------------------------
+  // Load Featured Properties
+  // --------------------------
+  const fetchFeaturedProperties = () => {
+    const API_BASE_URL =
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
-      const { data } = await axios.get(`${API_BASE_URL}/api/properties`, {
-        params: { sort: "dateAdded", order: "desc" }
+    axios
+      .get(`${API_BASE_URL}/getServices`)
+      .then((res) => {
+        // Show only first 6 properties
+        setProperties(res.data.slice(0, 6));
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load properties.");
+        setLoading(false);
       });
-
-      setProperties(data.slice(0, 6));
-    } catch (err) {
-      setError("Failed to load featured properties.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
   };
 
+  // --------------------------
+  // Hero Images
+  // --------------------------
   const heroImages = [
     "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&q=80",
     "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80",
-    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&q=80"
+    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&q=80",
   ];
 
+  // --------------------------
+  // Why Choose Us
+  // --------------------------
   const whyChooseUs = [
     {
       icon: <FaHouse className="w-9 h-9 text-blue-500" />,
       title: "Verified Listings",
-      desc: "Every property is manually verified for quality."
+      desc: "Every property is checked manually."
     },
     {
       icon: <FaMoneyBillWave className="w-9 h-9 text-green-500" />,
       title: "Best Market Rates",
-      desc: "Get competitive rates from owners & top agents."
+      desc: "Affordable rates directly from owners."
     },
     {
       icon: <FaLocationDot className="w-9 h-9 text-yellow-500" />,
       title: "Prime Locations",
-      desc: "Discover homes in the most desired areas."
+      desc: "Find homes in the most desired areas."
     },
     {
       icon: <FaStar className="w-9 h-9 text-purple-500" />,
       title: "Trusted Platform",
-      desc: "Thousands have found homes with HomeNest."
+      desc: "Thousands of happy users."
     }
   ];
 
+  // --------------------------
+  // How It Works Steps
+  // --------------------------
   const howItWorks = [
-    { step: "01", title: "Search", desc: "Filter by location, price & type." },
-    { step: "02", title: "Connect", desc: "Message owners or agents directly." },
-    { step: "03", title: "Move In", desc: "Schedule visits & finalize your home." }
+    { step: "01", title: "Search", desc: "Filter by location, type & price." },
+    { step: "02", title: "Connect", desc: "Chat with owners or agents." },
+    { step: "03", title: "Move In", desc: "Visit, finalize & shift." }
   ];
 
+  // --------------------------
+  // Market Insights
+  // --------------------------
   const insights = [
     {
       title: "Dhaka Property Boom",
-      summary: "Residential demand rising in Gulshan & Banani."
+      summary: "Demand rising rapidly in Gulshan & Banani."
     },
     {
-      title: "Commercial Growth",
-      summary: "Office rentals up 20% in Dhanmondi this year."
+      title: "Commercial Spaces",
+      summary: "Office rentals up by 20% this year."
     }
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Hero Slider */}
+
+      {/* ---------------------- */}
+      {/* HERO SLIDER */}
+      {/* ---------------------- */}
       <div
         className="relative mb-14 rounded-2xl overflow-hidden shadow-xl"
         data-aos="zoom-in"
@@ -123,16 +140,13 @@ const Home = () => {
         </Swiper>
       </div>
 
-      {/* Featured Properties */}
+      {/* ---------------------- */}
+      {/* FEATURED PROPERTIES */}
+      {/* ---------------------- */}
       <section className="mb-16" data-aos="fade-up">
         <div className="flex justify-between items-center mb-5">
-          <h2 className="text-3xl font-bold text-gray-800">
-            Featured Properties
-          </h2>
-          <Link
-            to="/properties"
-            className="text-blue-600 hover:underline font-medium"
-          >
+          <h2 className="text-3xl font-bold text-gray-800">Featured Properties</h2>
+          <Link to="/properties" className="text-blue-600 hover:underline font-medium">
             View All
           </Link>
         </div>
@@ -150,71 +164,58 @@ const Home = () => {
         )}
       </section>
 
-      {/* Why Choose Us */}
-      <section
-        className="mb-16 bg-gray-50 p-10 rounded-xl"
-        data-aos="fade-right"
-      >
+      {/* ---------------------- */}
+      {/* WHY CHOOSE US */}
+      {/* ---------------------- */}
+      <section className="mb-16 bg-gray-50 p-10 rounded-xl" data-aos="fade-right">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-10">
           Why Choose HomeNest?
         </h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {whyChooseUs.map((item, i) => (
-            <div
-              key={i}
-              className="text-center"
-              data-aos="zoom-in"
-              data-aos-delay={i * 120}
-            >
+            <div key={i} className="text-center" data-aos="zoom-in">
               <div className="flex justify-center mb-4">{item.icon}</div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                {item.title}
-              </h3>
+              <h3 className="text-lg font-semibold">{item.title}</h3>
               <p className="text-gray-600 text-sm">{item.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* ---------------------- */}
+      {/* HOW IT WORKS */}
+      {/* ---------------------- */}
       <section className="mb-16" data-aos="fade-up">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
           How It Works
         </h2>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {howItWorks.map((step, i) => (
-            <div
-              key={i}
-              className="bg-white p-8 rounded-xl shadow text-center"
-              data-aos="fade-down"
-            >
+            <div key={i} className="bg-white p-8 rounded-xl shadow text-center">
               <div className="text-4xl font-bold text-blue-600 mb-3">
                 {step.step}
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                {step.title}
-              </h3>
+              <h3 className="text-lg font-semibold">{step.title}</h3>
               <p className="text-gray-600 text-sm">{step.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Market Insights */}
+      {/* ---------------------- */}
+      {/* MARKET INSIGHTS */}
+      {/* ---------------------- */}
       <section data-aos="fade-up">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           Latest Market Insights
         </h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {insights.map((item, i) => (
-            <div
-              key={i}
-              className="bg-white p-6 rounded-xl border shadow-sm"
-              data-aos="flip-left"
-            >
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                {item.title}
-              </h3>
+            <div key={i} className="bg-white p-6 rounded-xl border shadow-sm">
+              <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
               <p className="text-gray-600 text-sm">{item.summary}</p>
               <button className="mt-3 text-blue-600 text-sm hover:underline">
                 Read More
@@ -223,6 +224,7 @@ const Home = () => {
           ))}
         </div>
       </section>
+
     </div>
   );
 };

@@ -20,7 +20,7 @@ const AllProperties = () => {
     setError(null);
 
     axios
-      .get('http://localhost:3000/getServices', {
+      .get('http://localhost:3000/allServices', {
         params: {
           
           search: searchTerm,
