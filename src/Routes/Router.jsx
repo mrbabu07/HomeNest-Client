@@ -11,7 +11,7 @@ import Login from "../Pages/Login";
 import Register from "../Pages/Register";
 import NotFound from "../Pages/NotFound";
 import PrivateRoute from "./PrivateRoute";
-// import UpdateProperty from "../Pages/UpdateProperty";
+import UpdateProperty from "../Pages/UpdateProperty";
 
 const MainLayout = () => (
   <>
@@ -59,14 +59,14 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-      // {
-      //   path: "/update-property",
-      //   element: (
-      //     <PrivateRoute>
-      //       <UpdateProperty />
-      //     </PrivateRoute>
-      //   ),
-      // },
+      {
+        path: "/update-property/:id",
+        element: (
+          <PrivateRoute>
+            <UpdateProperty />
+          </PrivateRoute>
+        ),
+      },
       {
         path: "/property/:id",
         element: (
