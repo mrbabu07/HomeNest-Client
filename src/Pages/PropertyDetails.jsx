@@ -1,3 +1,4 @@
+// ✅ All imports at the top
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaSpinner, FaStar } from "react-icons/fa";
@@ -5,17 +6,18 @@ import axios from "axios";
 import AuthContext from "../Context/AuthContext";
 import { toast } from "react-toastify";
 
-// Component for displaying reviews
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
+// Reusable Reviews component
 const Reviews = ({ reviews }) => {
   if (!reviews || reviews.length === 0) return <p>No reviews yet.</p>;
 
   return (
     <div className="space-y-4">
       {reviews.map((r) => (
-        <div key={r._id} className="border rounded p-3 shadow-sm">
+        <div key={r._id?.toString() || r._id} className="border rounded p-3 shadow-sm">
           <p className="font-semibold">
-            {r.reviewerName} - {r.rating}{" "}
-            <FaStar className="inline text-yellow-500" />
+            {r.reviewerName} - {r.rating} <FaStar className="inline text-yellow-500" />
           </p>
           <p className="text-gray-700">{r.reviewText}</p>
         </div>
@@ -24,7 +26,7 @@ const Reviews = ({ reviews }) => {
   );
 };
 
-// Component for submitting a new review
+// Reusable Review form
 const ReviewForm = ({ onAddReview }) => {
   const { user } = useContext(AuthContext);
   const [rating, setRating] = useState(5);
@@ -40,18 +42,19 @@ const ReviewForm = ({ onAddReview }) => {
 
     setSubmitting(true);
     const newReview = {
-      _id: Date.now().toString(),
       reviewerName: user.displayName || user.email,
       rating,
       reviewText,
     };
 
-    onAddReview(newReview);
-
-    setReviewText("");
-    setRating(5);
-    setSubmitting(false);
-    toast.success("Review submitted!");
+    onAddReview(newReview)
+      .then(() => {
+        setReviewText("");
+        setRating(5);
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -92,10 +95,12 @@ const ReviewForm = ({ onAddReview }) => {
   );
 };
 
-// Main property details component
+// Main component
 const PropertyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -105,7 +110,7 @@ const PropertyDetails = () => {
     setError(null);
 
     axios
-      .get(`http://localhost:3000/singleService/${id}`)
+      .get(`${API_BASE_URL}/singleService/${id}`)
       .then((res) => setProperty(res.data))
       .catch((err) => {
         console.error("Failed to fetch property:", err);
@@ -114,11 +119,33 @@ const PropertyDetails = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const addReview = (review) => {
-    setProperty((prev) => ({
-      ...prev,
-      reviews: [...(prev.reviews || []), review],
-    }));
+  const addReview = async (reviewInput) => {
+    if (!user) return;
+
+    const reviewPayload = {
+      reviewerName: reviewInput.reviewerName,
+      rating: reviewInput.rating,
+      reviewText: reviewInput.reviewText,
+      userEmail: user.email,
+    };
+
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/singleService/${id}/reviews`,
+        reviewPayload
+      );
+
+      const newReview = res.data.review;
+      setProperty((prev) => ({
+        ...prev,
+        reviews: [...(prev.reviews || []), newReview],
+      }));
+
+      toast.success("Review submitted!");
+    } catch (err) {
+      console.error("Failed to submit review:", err);
+      toast.error("Failed to submit review. Please try again.");
+    }
   };
 
   if (loading) {
@@ -145,6 +172,9 @@ const PropertyDetails = () => {
         src={property.imageURL}
         alt={property.name}
         className="w-full h-96 object-cover rounded shadow"
+        onError={(e) => {
+          e.target.src = "https://via.placeholder.com/800x400?text=No+Image";
+        }}
       />
 
       <div className="space-y-2">
