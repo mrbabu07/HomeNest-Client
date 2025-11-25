@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaSpinner, FaStar } from "react-icons/fa";
 import axios from "axios";
 import AuthContext from "../Context/AuthContext";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
@@ -193,6 +193,7 @@ const PropertyDetails = () => {
         <Reviews reviews={property.reviews} />
         <ReviewForm onAddReview={addReview} />
       </div>
+      <ToastContainer/>
     </div>
   );
 };

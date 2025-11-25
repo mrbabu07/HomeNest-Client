@@ -1,9 +1,10 @@
+// Pages/MyProperties.jsx
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
 import { FaSpinner, FaEye, FaEdit, FaTrash } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const MyProperties = () => {
   const { user } = useContext(AuthContext);
@@ -18,36 +19,56 @@ const MyProperties = () => {
     if (!user?.email) return;
 
     setLoading(true);
+
     axios
-      .get(`${API_BASE_URL}/allServices`, { params: { email: user.email } })
+      .get(`${API_BASE_URL}/allServices`, {
+        params: { email: user.email },
+      })
       .then((res) => {
-        setProperties(res.data);
-        setLoading(false);
+        setProperties(res.data || []);
       })
       .catch(() => {
         toast.error("Couldn't load your properties.");
+      })
+      .finally(() => {
         setLoading(false);
       });
-  }, [user]);
+  }, [user?.email, API_BASE_URL]);
 
   // Delete handler
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this property?")) return;
+    if (!window.confirm("Are you sure you want to delete this property?"))
+      return;
+
     try {
-      await axios.delete(`${API_BASE_URL}/deleteService/${id}`);
-      setProperties((prev) => prev.filter((p) => p._id !== id));
-      toast.success("Property deleted successfully!");
+      const res = await axios.delete(`${API_BASE_URL}/deleteService/${id}`);
+
+      if (res.data.deletedCount > 0) {
+        setProperties((prev) => prev.filter((p) => p._id !== id));
+        toast.success("Property deleted successfully!");
+      } else {
+        toast.error("Delete failed.");
+      }
     } catch {
       toast.error("Failed to delete property.");
     }
   };
 
-  if (loading)
+  if (!user?.email) {
+    return (
+      <div className="text-center text-lg py-20">
+        Please log in to see your properties.
+      </div>
+    );
+  }
+
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900">
         <FaSpinner className="animate-spin text-5xl text-blue-600 dark:text-blue-400" />
       </div>
     );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
@@ -63,7 +84,9 @@ const MyProperties = () => {
 
         {properties.length === 0 ? (
           <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div className="text-6xl mb-4 text-gray-400 dark:text-gray-600">🏠</div>
+            <div className="text-6xl mb-4 text-gray-400 dark:text-gray-600">
+              🏠
+            </div>
             <h3 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
               No Properties Yet
             </h3>
@@ -110,18 +133,18 @@ const MyProperties = () => {
                         />
                       </td>
 
-                      <td className="p-4">
-                        <div className="font-semibold text-gray-900 dark:text-gray-100">
-                          {p.name}
-                        </div>
+                      <td className="p-4 font-semibold text-gray-900 dark:text-gray-100">
+                        {p.name}
                       </td>
 
                       <td className="p-4">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          p.category === "Rent"
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                            : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                        }`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            p.category === "Rent"
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                              : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                          }`}
+                        >
                           {p.category}
                         </span>
                       </td>
@@ -180,22 +203,27 @@ const MyProperties = () => {
                         e.target.src = "https://via.placeholder.com/150";
                       }}
                     />
-                    
+
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
                         {p.name}
                       </h3>
+
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                         {p.location}
                       </p>
+
                       <p className="font-bold text-gray-900 dark:text-gray-100">
                         ৳{p.price?.toLocaleString()}
                       </p>
-                      <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${
-                        p.category === "Rent"
-                          ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                          : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                      }`}>
+
+                      <span
+                        className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${
+                          p.category === "Rent"
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                            : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        }`}
+                      >
                         {p.category}
                       </span>
                     </div>
@@ -229,6 +257,7 @@ const MyProperties = () => {
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

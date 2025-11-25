@@ -1,66 +1,78 @@
-// src/Pages/AllProperties.jsx
-
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import PropertyCard from "../Component/PropertyCard";
 import { FaSpinner, FaSearch } from "react-icons/fa";
-import axios from "axios";
+import { ToastContainer } from "react-toastify";
 
 const AllProperties = () => {
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState([]);   // All property data
+  const [loading, setLoading] = useState(true);       // Loader
 
-  // UI state
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("newest");
+  const [searchTerm, setSearchTerm] = useState("");   // Search text
+  const [sortOption, setSortOption] = useState("newest"); // Dropdown sort
 
-  // -------- Fetch ALL services ----------
-  const loadData = async () => {
+  // ------------------------------
+  // Load all properties from backend
+  // ------------------------------
+  const loadProperties = async () => {
+    setLoading(true);
+
     try {
-      setLoading(true);
+      const response = await axios.get("http://localhost:3000/AllServices");
 
-      // ❗ We will use a NEW backend route that returns ALL properties
-      const res = await axios.get("http://localhost:3000/AllServices");
-
-      setProperties(res.data);
-    } catch (err) {
-      console.error("Fetch failed:", err);
-    } finally {
-      setLoading(false);
+      // Keep it very simple
+      if (Array.isArray(response.data)) {
+        setProperties(response.data);
+      } else {
+        setProperties([]);
+      }
+    } catch (error) {
+      console.log("Error loading data:", error);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
-    loadData();
+    loadProperties();
   }, []);
 
-  // -------- Local Search + Sort ----------
-  const filtered = properties
-    .filter((p) =>
-      p.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      switch (sortOption) {
-        case "price_asc":
-          return a.price - b.price;
-        case "price_desc":
-          return b.price - a.price;
-        case "newest":
-          return b._id.localeCompare(a._id);
-        case "oldest":
-          return a._id.localeCompare(b._id);
-        default:
-          return 0;
-      }
-    });
+  // ------------------------------
+  // Search + Sorting (simple)
+  // ------------------------------
+  let filteredProperties = properties.filter((item) => {
+    return item.name?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
+  if (sortOption === "price_asc") {
+    filteredProperties.sort((a, b) => a.price - b.price);
+  }
+
+  if (sortOption === "price_desc") {
+    filteredProperties.sort((a, b) => b.price - a.price);
+  }
+
+  if (sortOption === "newest") {
+    filteredProperties.sort((a, b) => b._id.localeCompare(a._id));
+  }
+
+  if (sortOption === "oldest") {
+    filteredProperties.sort((a, b) => a._id.localeCompare(b._id));
+  }
+
+  // ------------------------------
+  // JSX
+  // ------------------------------
   return (
     <div className="p-6 max-w-7xl mx-auto dark:bg-gray-900 min-h-screen">
       <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
         All Properties
       </h2>
 
-      {/* Search + Sort */}
+      {/* Search + Sort Section */}
       <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md flex flex-col md:flex-row gap-4">
+
+        {/* Search */}
         <div className="flex-1">
           <label className="block mb-1 font-medium">Search by Name</label>
           <div className="relative">
@@ -75,6 +87,7 @@ const AllProperties = () => {
           </div>
         </div>
 
+        {/* Sort Dropdown */}
         <div className="w-full md:w-48">
           <label className="block mb-1 font-medium">Sort By</label>
           <select
@@ -100,19 +113,21 @@ const AllProperties = () => {
       {/* Property List */}
       {!loading && (
         <>
-          {filtered.length > 0 ? (
+          {filteredProperties.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((p) => (
-                <PropertyCard key={p._id} property={p} />
+              {filteredProperties.map((property) => (
+                <PropertyCard key={property._id} property={property} />
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-500 py-10">
+            <div className="text-center text-gray-500 py-10">
               No properties found.
-            </p>
+            </div>
           )}
         </>
       )}
+
+      <ToastContainer />
     </div>
   );
 };

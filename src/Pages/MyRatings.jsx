@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import AuthContext from "../Context/AuthContext";
 import { FaSpinner, FaStar } from "react-icons/fa";
+import { ToastContainer } from "react-toastify";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
@@ -70,6 +71,7 @@ const MyRatings = () => {
           ))}
         </div>
       )}
+      <ToastContainer/>
     </div>
   );
 };

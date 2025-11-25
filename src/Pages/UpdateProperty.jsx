@@ -1,19 +1,27 @@
 // Pages/UpdateProperty.jsx
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const UpdateProperty = () => {
+  // Get property ID from URL
   const { id } = useParams();
+  
+  // Get logged in user info
   const { user } = useContext(AuthContext);
+  
+  // For navigation after update
   const navigate = useNavigate();
 
+  // States
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
+  const [fetchError, setFetchError] = useState(null);
+  
+  // Form data state
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -22,80 +30,105 @@ const UpdateProperty = () => {
     location: "",
     imageURL: "",
   });
-  console.log("Form Data:", formData);
 
-  // Fetch old property
+  // Fetch property data when component loads
   useEffect(() => {
-    setLoading(true);
-    axios.get(`${API_BASE_URL}/singleService/${id}`)
-      .then((res) => {
-        if (!res.data) {
-          setError("Property not found");
-          return;
-        }
-        setFormData(res.data);
-      })
-      .catch(() => setError("Failed to fetch property"))
-      .finally(() => setLoading(false));
-  }, [id]);
+    // Function to load property data
+    const loadPropertyData = async () => {
+      setLoading(true);
+      setFetchError(null);
 
+      try {
+        // Get property from API
+        const response = await axios.get(`${API_BASE_URL}/singleService/${id}`);
+        
+        // Check if data exists
+        if (response.data) {
+          setFormData(response.data);
+        } else {
+          setFetchError("Property not found");
+        }
+      } catch (error) {
+        console.error("Error loading property:", error);
+        setFetchError("Failed to load property data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Call the function
+    loadPropertyData();
+  }, [id]); // Run only when ID changes
+
+  // Handle input changes
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
-  
+  // Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Update property
-  // Update property
-const handleUpdate = async (e) => {
-  e.preventDefault();
+    // Check if user is logged in
+    if (!user) {
+      toast.error("Please log in first");
+      return;
+    }
 
-  if (!user) {
-    toast.error("Please log in first");
-    return;
-  }
+    setLoading(true);
 
-  setLoading(true);
+    try {
+      // Remove _id from formData (MongoDB doesn't allow updating _id)
+      const { _id, ...updateData } = formData;
 
-  // ✅ Destructure to exclude _id (and any other MongoDB metadata)
-  const { _id, ...updateFields } = formData;
+      // Prepare data to send
+      const dataToSend = {
+        ...updateData,
+        price: Number(formData.price), // Convert price to number
+        userEmail: user.email,
+        userName: user.displayName || user.email,
+      };
 
-  const payload = {
-    ...updateFields,
-    price: Number(formData.price),
-    userEmail: user.email,
-    userName: user.displayName || user.email,
+      // Send update request
+      const response = await axios.put(
+        `${API_BASE_URL}/updateService/${id}`,
+        dataToSend
+      );
+
+      // Check if update was successful
+      if (response.data.result?.modifiedCount > 0) {
+        toast.success("Property updated successfully!");
+        
+        // Wait 1.5 seconds then navigate
+        setTimeout(() => {
+          navigate("/my-properties");
+        }, 1500);
+      } else {
+        toast.info("No changes were made");
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+      toast.error("Failed to update property");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  try {
-    const res = await axios.put(`${API_BASE_URL}/updateService/${id}`, payload);
-
-    // ✅ Backend now returns { message, result }, so check result.modifiedCount
-    if (res.data.result?.modifiedCount > 0) {
-      toast.success("Property updated successfully!");
-      navigate("/my-properties");
-    } else {
-      toast.error("Update failed or no changes were made.");
-    }
-  } catch (err) {
-    console.error("Update error:", err);
-    toast.error("Failed to update property. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-  if (error) {
+  // Show error if property couldn't be loaded
+  if (fetchError) {
     return (
       <div className="text-center py-20 text-xl text-red-500">
-        {error}
+        {fetchError}
       </div>
     );
   }
 
+  // Show message if user not logged in
   if (!user) {
     return (
       <div className="text-center py-16 text-lg font-semibold">
@@ -108,7 +141,7 @@ const handleUpdate = async (e) => {
     <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 shadow-lg rounded-lg">
       <h2 className="text-3xl font-bold mb-6">Update Property</h2>
 
-      <form onSubmit={handleUpdate} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         
         {/* Name */}
         <div>
@@ -201,6 +234,8 @@ const handleUpdate = async (e) => {
           {loading ? "Updating..." : "Update Property"}
         </button>
       </form>
+      
+      
     </div>
   );
 };
