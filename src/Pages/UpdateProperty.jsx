@@ -1,4 +1,5 @@
 // Pages/UpdateProperty.jsx
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
@@ -21,12 +22,12 @@ const UpdateProperty = () => {
     location: "",
     imageURL: "",
   });
+  console.log("Form Data:", formData);
 
   // Fetch old property
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`http://localhost:3000/singleService/${id}`)
+    axios.get(`${API_BASE_URL}/singleService/${id}`)
       .then((res) => {
         if (!res.data) {
           setError("Property not found");
@@ -48,42 +49,44 @@ const UpdateProperty = () => {
   
 
   // Update property
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+  // Update property
+const handleUpdate = async (e) => {
+  e.preventDefault();
 
-    if (!user) {
-      toast.error("Please log in first");
-      return;
-    }
+  if (!user) {
+    toast.error("Please log in first");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    const payload = {
-      ...formData,
-      price: Number(formData.price),
-      userEmail: user.email,
-      userName: user.displayName || user.email,
-    };
+  // ✅ Destructure to exclude _id (and any other MongoDB metadata)
+  const { _id, ...updateFields } = formData;
 
-    try {
-      const res = await axios.put(
-        `http://localhost:3000/updateService/${id}`,
-        payload
-      );
-
-      if (res.data.modifiedCount > 0 || res.data.acknowledged) {
-        toast.success("Property updated successfully!");
-        navigate("/my-properties");
-      } else {
-        toast.error("Nothing changed or update failed");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update property");
-    } finally {
-      setLoading(false);
-    }
+  const payload = {
+    ...updateFields,
+    price: Number(formData.price),
+    userEmail: user.email,
+    userName: user.displayName || user.email,
   };
+
+  try {
+    const res = await axios.put(`${API_BASE_URL}/updateService/${id}`, payload);
+
+    // ✅ Backend now returns { message, result }, so check result.modifiedCount
+    if (res.data.result?.modifiedCount > 0) {
+      toast.success("Property updated successfully!");
+      navigate("/my-properties");
+    } else {
+      toast.error("Update failed or no changes were made.");
+    }
+  } catch (err) {
+    console.error("Update error:", err);
+    toast.error("Failed to update property. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (error) {
     return (
