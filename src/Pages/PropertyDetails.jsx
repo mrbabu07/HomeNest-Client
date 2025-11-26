@@ -1,23 +1,24 @@
-// ✅ All imports at the top
+// ✅ Import and config at the TOP
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaSpinner, FaStar } from "react-icons/fa";
 import axios from "axios";
 import AuthContext from "../Context/AuthContext";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
-// Reusable Reviews component
+// Component for displaying reviews
 const Reviews = ({ reviews }) => {
   if (!reviews || reviews.length === 0) return <p>No reviews yet.</p>;
 
   return (
     <div className="space-y-4">
       {reviews.map((r) => (
-        <div key={r._id?.toString() || r._id} className="border rounded p-3 shadow-sm">
+        <div key={r._id} className="border rounded p-3 shadow-sm">
           <p className="font-semibold">
-            {r.reviewerName} - {r.rating} <FaStar className="inline text-yellow-500" />
+            {r.reviewerName} - {r.rating}{" "}
+            <FaStar className="inline text-yellow-500" />
           </p>
           <p className="text-gray-700">{r.reviewText}</p>
         </div>
@@ -26,7 +27,7 @@ const Reviews = ({ reviews }) => {
   );
 };
 
-// Reusable Review form
+// Component for submitting a new review
 const ReviewForm = ({ onAddReview }) => {
   const { user } = useContext(AuthContext);
   const [rating, setRating] = useState(5);
@@ -95,16 +96,17 @@ const ReviewForm = ({ onAddReview }) => {
   );
 };
 
-// Main component
+// Main property details component
 const PropertyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext); // ✅ Now available
 
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // ✅ Fetch property
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -119,6 +121,7 @@ const PropertyDetails = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
+  // ✅ Submit review to backend
   const addReview = async (reviewInput) => {
     if (!user) return;
 
@@ -172,9 +175,6 @@ const PropertyDetails = () => {
         src={property.imageURL}
         alt={property.name}
         className="w-full h-96 object-cover rounded shadow"
-        onError={(e) => {
-          e.target.src = "https://via.placeholder.com/800x400?text=No+Image";
-        }}
       />
 
       <div className="space-y-2">
@@ -193,7 +193,6 @@ const PropertyDetails = () => {
         <Reviews reviews={property.reviews} />
         <ReviewForm onAddReview={addReview} />
       </div>
-      <ToastContainer/>
     </div>
   );
 };
