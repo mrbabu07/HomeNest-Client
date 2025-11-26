@@ -1,211 +1,301 @@
-// Component/Navbar.jsx
 import React, { useState, useContext, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../Firebase/Firebase.config";
 import { toast } from "react-toastify";
-import { Home, MapPin, Plus, User, Star, LogOut, Menu, X } from "lucide-react";
+import { 
+  Home, 
+  MapPin, 
+  Plus, 
+  User, 
+  Star, 
+  LogOut, 
+  Menu, 
+  X,
+  Sun,
+  Moon,
+  ChevronDown,
+  Building
+} from "lucide-react";
 
 const Navbar = () => {
   const { user, loading } = useContext(AuthContext);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Theme persistence and initialization
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const browserPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-    if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
-      setIsDarkMode(true);
+    if (savedTheme === "dark" || (!savedTheme && browserPrefersDark)) {
+      setDarkMode(true);
       document.documentElement.setAttribute("data-theme", "dark");
     } else {
-      setIsDarkMode(false);
+      setDarkMode(false);
       document.documentElement.setAttribute("data-theme", "light");
     }
   }, []);
 
-  const toggleTheme = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    document.documentElement.setAttribute("data-theme", newMode ? "dark" : "light");
-    localStorage.setItem("theme", newMode ? "dark" : "light");
+  const switchTheme = () => {
+    const newTheme = !darkMode;
+    setDarkMode(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme ? "dark" : "light");
+    localStorage.setItem("theme", newTheme ? "dark" : "light");
   };
 
-  const handleSignout = async () => {
+  const handleLogout = async () => {
     try {
       await signOut(auth);
-      toast.success("You've been logged out. See you soon!");
-      setIsUserDropdownOpen(false);
+      toast.success("Successfully logged out!");
+      setUserDropdownOpen(false);
     } catch (error) {
       toast.error("Error logging out: " + error.message);
     }
   };
 
-  const navLinkClass = "block px-4 py-2 text-white hover:text-yellow-400 font-medium transition";
+  const navLinkStyle = ({ isActive }) => 
+    `flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+      isActive 
+        ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300" 
+        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
+    }`;
 
-  if (loading) return <div className="h-16 bg-gray-900"></div>;
+  if (loading) {
+    return (
+      <div className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 animate-pulse"></div>
+    );
+  }
 
   return (
-    <nav className="bg-gray-900 shadow-lg border-b border-gray-800">
+    <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 backdrop-blur-sm bg-white/95 dark:bg-gray-900/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-white">HomeNest</span>
+          {/* Brand Logo */}
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl">
+              <Building className="text-white" size={24} />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:to-teal-600 transition-all">
+              HomeNest
+            </span>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-6">
-            <NavLink to="/" className={navLinkClass} end>
-              <span className="flex items-center gap-1"><Home size={16} /> Home</span>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-1">
+            <NavLink to="/" className={navLinkStyle} end>
+              <Home size={18} />
+              Home
             </NavLink>
-            <NavLink to="/properties" className={navLinkClass}>
-              <span className="flex items-center gap-1"><MapPin size={16} /> All Properties</span>
+            
+            <NavLink to="/properties" className={navLinkStyle}>
+              <MapPin size={18} />
+              All Properties
             </NavLink>
+
             {user && (
               <>
-                <NavLink to="/add-property" className={navLinkClass}>
-                  <span className="flex items-center gap-1"><Plus size={16} /> Add Property</span>
+                <NavLink to="/add-property" className={navLinkStyle}>
+                  <Plus size={18} />
+                  Add Property
                 </NavLink>
-                <NavLink to="/my-properties" className={navLinkClass}>
-                  <span className="flex items-center gap-1"><User size={16} /> My Properties</span>
+
+                <NavLink to="/my-properties" className={navLinkStyle}>
+                  <User size={18} />
+                  My Properties
                 </NavLink>
-                <NavLink to="/my-ratings" className={navLinkClass}>
-                  <span className="flex items-center gap-1"><Star size={16} /> My Ratings</span>
+
+                <NavLink to="/my-ratings" className={navLinkStyle}>
+                  <Star size={18} />
+                  My Ratings
                 </NavLink>
               </>
             )}
           </div>
 
-          {/* Right Section - Desktop */}
+          {/* Desktop Right Section */}
           <div className="hidden md:flex items-center space-x-4">
             {/* Theme Toggle */}
             <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-white hover:bg-gray-800 focus:outline-none"
+              onClick={switchTheme}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-105"
               aria-label="Toggle theme"
             >
-              {isDarkMode ? "☀️" : "🌙"}
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            {/* Auth / User */}
+            {/* User Profile or Auth */}
             {user ? (
               <div className="relative">
-                <img
-                  src={user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
-                  alt="User Avatar"
-                  className="w-10 h-10 rounded-full border-2 border-yellow-500 cursor-pointer hover:scale-105 transition"
-                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                />
-                {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-gray-800 text-white rounded-lg shadow-lg z-20 border border-gray-700">
-                    <div className="p-4 border-b border-gray-700">
-                      <p className="font-semibold truncate">{user.displayName || user.email}</p>
-                      <p className="text-sm text-gray-400 truncate">{user.email}</p>
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                >
+                  <img
+                    src={user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+                    alt="User Avatar"
+                    className="w-8 h-8 rounded-full border-2 border-blue-500 shadow-sm"
+                  />
+                  <ChevronDown size={16} className={`text-gray-500 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-20 overflow-hidden">
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                      <p className="font-semibold text-gray-900 dark:text-white truncate">
+                        {user.displayName || "User"}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        {user.email}
+                      </p>
                     </div>
+                    
                     <button
-                      onClick={handleSignout}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-left text-white hover:bg-gray-700 transition"
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     >
-                      <LogOut size={16} /> Logout
+                      <LogOut size={18} />
+                      Logout
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="flex space-x-2">
-                <Link to="/login" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition">
+              <div className="flex space-x-3">
+                <Link
+                  to="/login"
+                  className="px-6 py-2 text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                >
                   Login
                 </Link>
-                <Link to="/register" className="px-4 py-2 border border-yellow-500 text-yellow-500 rounded hover:bg-yellow-500 hover:text-gray-900 transition">
-                  Register
+                
+                <Link
+                  to="/register"
+                  className="px-6 py-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-teal-600 transform hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  Get Started
                 </Link>
               </div>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-gray-800 border-t border-gray-700 mt-2 rounded-lg overflow-hidden">
-            <NavLink to="/" className={navLinkClass} onClick={() => setIsMenuOpen(false)} end>
-              <span className="flex items-center gap-2"><Home size={16} /> Home</span>
-            </NavLink>
-            <NavLink to="/properties" className={navLinkClass} onClick={() => setIsMenuOpen(false)}>
-              <span className="flex items-center gap-2"><MapPin size={16} /> All Properties</span>
-            </NavLink>
-            {user && (
-              <>
-                <NavLink to="/add-property" className={navLinkClass} onClick={() => setIsMenuOpen(false)}>
-                  <span className="flex items-center gap-2"><Plus size={16} /> Add Property</span>
-                </NavLink>
-                <NavLink to="/my-properties" className={navLinkClass} onClick={() => setIsMenuOpen(false)}>
-                  <span className="flex items-center gap-2"><User size={16} /> My Properties</span>
-                </NavLink>
-                <NavLink to="/my-ratings" className={navLinkClass} onClick={() => setIsMenuOpen(false)}>
-                  <span className="flex items-center gap-2"><Star size={16} /> My Ratings</span>
-                </NavLink>
-              </>
-            )}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 mt-2 mb-4 overflow-hidden">
+            <div className="p-4 space-y-2">
+              <NavLink
+                to="/"
+                className={navLinkStyle}
+                onClick={() => setMobileMenuOpen(false)}
+                end
+              >
+                <Home size={18} />
+                Home
+              </NavLink>
 
-            <div className="px-4 py-3 border-t border-gray-700">
-              {/* Theme Toggle - Mobile */}
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-white">Theme</span>
+              <NavLink
+                to="/properties"
+                className={navLinkStyle}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <MapPin size={18} />
+                All Properties
+              </NavLink>
+
+              {user && (
+                <>
+                  <NavLink
+                    to="/add-property"
+                    className={navLinkStyle}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Plus size={18} />
+                    Add Property
+                  </NavLink>
+
+                  <NavLink
+                    to="/my-properties"
+                    className={navLinkStyle}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <User size={18} />
+                    My Properties
+                  </NavLink>
+
+                  <NavLink
+                    to="/my-ratings"
+                    className={navLinkStyle}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Star size={18} />
+                    My Ratings
+                  </NavLink>
+                </>
+              )}
+            </div>
+
+            {/* Mobile Bottom Section */}
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+              {/* Theme Toggle */}
+              <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <span className="text-gray-700 dark:text-gray-300 font-medium">Theme</span>
                 <button
-                  onClick={() => {
-                    toggleTheme();
-                    setIsMenuOpen(false);
-                  }}
-                  className="p-2 rounded text-white bg-gray-700"
+                  onClick={switchTheme}
+                  className="p-2 rounded-lg bg-white dark:bg-gray-600 shadow-sm hover:shadow-md transition-all"
                 >
-                  {isDarkMode ? "☀️" : "🌙"}
+                  {darkMode ? <Sun size={18} /> : <Moon size={18} />}
                 </button>
               </div>
 
-              {/* Auth - Mobile */}
+              {/* User Section */}
               {user ? (
-                <div>
-                  <div className="p-2 bg-gray-700 rounded mb-2">
-                    <p className="text-white truncate">{user.displayName || user.email}</p>
-                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                <div className="space-y-3">
+                  <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p className="text-gray-900 dark:text-white font-semibold truncate">
+                      {user.displayName || user.email}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                      {user.email}
+                    </p>
                   </div>
+                  
                   <button
                     onClick={() => {
-                      setIsMenuOpen(false);
-                      handleSignout();
+                      setMobileMenuOpen(false);
+                      handleLogout();
                     }}
-                    className="w-full py-2 bg-red-600 text-white rounded hover:bg-red-500 transition"
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
                   >
-                    <LogOut size={16} className="inline mr-1" /> Logout
+                    <LogOut size={18} />
+                    Logout
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                   <Link
                     to="/login"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="w-full text-center py-2 bg-blue-600 rounded text-white hover:bg-blue-500 transition"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                   >
                     Login
                   </Link>
+                  
                   <Link
                     to="/register"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="w-full text-center py-2 border border-yellow-500 text-yellow-500 rounded hover:bg-yellow-500 hover:text-gray-900 transition"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-teal-600 transition-all"
                   >
-                    Register
+                    Get Started
                   </Link>
                 </div>
               )}
