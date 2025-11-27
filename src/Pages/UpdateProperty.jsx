@@ -1,4 +1,4 @@
-// Pages/UpdateProperty.jsx
+
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";

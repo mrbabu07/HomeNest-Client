@@ -1,9 +1,14 @@
-// src/Pages/AllProperties.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import PropertyCard from "../Component/PropertyCard";
-import { FaSpinner, FaSearch, FaFilter, FaHome, FaSortAmountDown } from "react-icons/fa";
+import {
+  FaSpinner,
+  FaSearch,
+  FaFilter,
+  FaHome,
+  FaSortAmountDown,
+} from "react-icons/fa";
 
 const AllProperties = () => {
   const [properties, setProperties] = useState([]);
@@ -36,7 +41,6 @@ const AllProperties = () => {
   return (
     <div className="bg-base-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
-        
         {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-primary rounded-xl shadow mb-4">
@@ -105,9 +109,15 @@ const AllProperties = () => {
           {!loading && (
             <div className="mt-4 pt-4 border-t border-base-200">
               <p className="text-sm text-base-content/70">
-                <span className="font-bold text-primary">{properties.length}</span> properties found
+                <span className="font-bold text-primary">
+                  {properties.length}
+                </span>{" "}
+                properties found
                 {searchTerm && (
-                  <> matching <span className="font-medium">"{searchTerm}"</span></>
+                  <>
+                    {" "}
+                    matching <span className="font-medium">"{searchTerm}"</span>
+                  </>
                 )}
               </p>
             </div>

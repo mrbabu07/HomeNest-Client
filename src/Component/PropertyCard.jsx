@@ -1,4 +1,3 @@
-// src/Component/PropertyCard.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -8,24 +7,24 @@ import {
   FaCalendar,
   FaStar,
   FaHeart,
-  FaRegHeart
+  FaRegHeart,
 } from "react-icons/fa";
 
 const PropertyCard = ({ property }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // ✅ FIXED: Map API fields to your variable names
+  //Map API fields to your variable names
   const {
     _id,
-    name: propertyName,        // ← from "name" in DB
+    name: propertyName,
     category,
     description,
     location,
     price,
-    imageURL: image,           // ← from "imageURL" in DB
+    imageURL: image,
     userName,
-    postedDate
+    postedDate,
   } = property;
 
   const formattedPrice = new Intl.NumberFormat("en-US").format(price);
@@ -39,14 +38,14 @@ const PropertyCard = ({ property }) => {
       const now = new Date();
       const diffDays = Math.ceil(Math.abs(now - date) / (1000 * 60 * 60 * 24));
 
-      if (diffDays === 1) return "1 day ago";
-      if (diffDays < 7) return `${diffDays} days ago`;
-      if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+      // if (diffDays === 1) return "1 day ago";
+      // if (diffDays < 7) return `${diffDays} days ago`;
+      // if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
 
       return date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
-        day: "numeric"
+        day: "numeric",
       });
     } catch {
       return "Recently added";
@@ -58,13 +57,13 @@ const PropertyCard = ({ property }) => {
       rent: { colorClass: "bg-blue-600", text: "For Rent", icon: "🏠" },
       sale: { colorClass: "bg-blue-800", text: "For Sale", icon: "💰" },
       commercial: { colorClass: "bg-gray-700", text: "Commercial", icon: "🏢" },
-      land: { colorClass: "bg-gray-600", text: "Land", icon: "🌳" }
+      land: { colorClass: "bg-gray-600", text: "Land", icon: "🌳" },
     };
     return (
       categories[cat?.toLowerCase()] || {
         colorClass: "bg-gray-500",
         text: "Property",
-        icon: "🏡"
+        icon: "🏡",
       }
     );
   };
@@ -78,12 +77,14 @@ const PropertyCard = ({ property }) => {
   };
 
   return (
-    <div className="group bg-base-100 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border-4 stroke-3 border-base-200 transform hover:scale-105 hover:-translate-y-2">
+    <div className="group bg-base-100 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border-4 str border-base-200 transform hover:scale-105 hover:-translate-y-2">
       {/* Image Section */}
       <div className="relative h-64 overflow-hidden">
         {!imageLoaded && (
           <div className="absolute inset-0 bg-base-200 animate-pulse flex items-center justify-center">
-            <span className="text-base-content/70 text-sm">Loading image...</span>
+            <span className="text-base-content/70 text-sm">
+              Loading image...
+            </span>
           </div>
         )}
 

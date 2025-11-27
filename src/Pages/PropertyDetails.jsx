@@ -1,4 +1,4 @@
-// src/Pages/PropertyDetails.jsx
+
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaSpinner, FaStar, FaMapMarkerAlt, FaTag, FaUser, FaCalendar, FaArrowLeft } from "react-icons/fa";
