@@ -4,24 +4,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+import { FaSpinner, FaHome, FaEdit, FaDollarSign, FaMapMarkerAlt, FaImage, FaTag } from "react-icons/fa";
 
 const UpdateProperty = () => {
-  // Get property ID from URL
   const { id } = useParams();
-  
-  // Get logged in user info
   const { user } = useContext(AuthContext);
-  
-  // For navigation after update
   const navigate = useNavigate();
 
-  // States
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
-  
-  // Form data state
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -31,18 +22,14 @@ const UpdateProperty = () => {
     imageURL: "",
   });
 
-  // Fetch property data when component loads
   useEffect(() => {
-    // Function to load property data
     const loadPropertyData = async () => {
       setLoading(true);
       setFetchError(null);
 
       try {
-        // Get property from API
-        const response = await axios.get(`${API_BASE_URL}/singleService/${id}`);
+        const response = await axios.get(`http://localhost:3000/singleService/${id}`);
         
-        // Check if data exists
         if (response.data) {
           setFormData(response.data);
         } else {
@@ -56,25 +43,20 @@ const UpdateProperty = () => {
       }
     };
 
-    // Call the function
     loadPropertyData();
-  }, [id]); // Run only when ID changes
+  }, [id]);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
     setFormData({
       ...formData,
       [name]: value,
     });
   };
 
-  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if user is logged in
     if (!user) {
       toast.error("Please log in first");
       return;
@@ -83,28 +65,21 @@ const UpdateProperty = () => {
     setLoading(true);
 
     try {
-      // Remove _id from formData (MongoDB doesn't allow updating _id)
       const { _id, ...updateData } = formData;
-
-      // Prepare data to send
       const dataToSend = {
         ...updateData,
-        price: Number(formData.price), // Convert price to number
+        price: Number(formData.price),
         userEmail: user.email,
         userName: user.displayName || user.email,
       };
 
-      // Send update request
       const response = await axios.put(
-        `${API_BASE_URL}/updateService/${id}`,
+        `http://localhost:3000/updateService/${id}`,
         dataToSend
       );
 
-      // Check if update was successful
       if (response.data.result?.modifiedCount > 0) {
         toast.success("Property updated successfully!");
-        
-        // Wait 1.5 seconds then navigate
         setTimeout(() => {
           navigate("/my-properties");
         }, 1500);
@@ -119,123 +94,193 @@ const UpdateProperty = () => {
     }
   };
 
-  // Show error if property couldn't be loaded
   if (fetchError) {
     return (
-      <div className="text-center py-20 text-xl text-red-500">
-        {fetchError}
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center transition-colors duration-500">
+        <div className="text-center p-8 bg-red-50 dark:bg-red-900/20 rounded-2xl shadow-xl border border-red-200 dark:border-red-800 transition-all duration-500">
+          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center">
+            <FaHome className="text-3xl text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-red-800 dark:text-red-200 mb-3 transition-colors duration-500">
+            Property Not Found
+          </h3>
+          <p className="text-red-600 dark:text-red-300 transition-colors duration-500">
+            {fetchError}
+          </p>
+        </div>
       </div>
     );
   }
 
-  // Show message if user not logged in
   if (!user) {
     return (
-      <div className="text-center py-16 text-lg font-semibold">
-        You must log in first.
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center transition-colors duration-500">
+        <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500">
+          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+            <FaEdit className="text-3xl text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-3 transition-colors duration-500">
+            Authentication Required
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 transition-colors duration-500">
+            Please log in to update properties.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 shadow-lg rounded-lg">
-      <h2 className="text-3xl font-bold mb-6">Update Property</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-500">
+      <div className="max-w-2xl mx-auto px-4">
         
-        {/* Name */}
-        <div>
-          <label>Property Name *</label>
-          <input
-            type="text"
-            name="name"
-            required
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 rounded-2xl shadow-lg mb-4 transition-all duration-500">
+            <FaEdit className="text-2xl text-white" />
+          </div>
+          <h2 className="text-4xl font-extrabold mb-3 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent transition-all duration-500">
+            Update Property
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 transition-colors duration-500">
+            Modify your property listing details
+          </p>
         </div>
 
-        {/* Description */}
-        <div>
-          <label>Description *</label>
-          <textarea
-            name="description"
-            rows="4"
-            required
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          ></textarea>
-        </div>
+        {/* Form Container */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 md:p-8 transition-all duration-500">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* Property Name */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">
+                <FaHome className="text-blue-500" />
+                Property Name *
+              </label>
+              <input
+                type="text"
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                placeholder="Enter property name"
+              />
+            </div>
 
-        {/* Category */}
-        <div>
-          <label>Category *</label>
-          <select
-            name="category"
-            required
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="Rent">Rent</option>
-            <option value="Sale">Sale</option>
-            <option value="Commercial">Commercial</option>
-            <option value="Land">Land</option>
-          </select>
-        </div>
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">
+                <FaEdit className="text-blue-500" />
+                Description *
+              </label>
+              <textarea
+                name="description"
+                rows="4"
+                required
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                placeholder="Describe your property..."
+              ></textarea>
+            </div>
 
-        {/* Price */}
-        <div>
-          <label>Price *</label>
-          <input
-            type="number"
-            name="price"
-            required
-            value={formData.price}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Category */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">
+                  <FaTag className="text-blue-500" />
+                  Category *
+                </label>
+                <select
+                  name="category"
+                  required
+                  value={formData.category}
+                  onChange={handleChange}
+                  className="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white"
+                >
+                  <option value="Rent">Rent</option>
+                  <option value="Sale">Sale</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Land">Land</option>
+                </select>
+              </div>
 
-        {/* Location */}
-        <div>
-          <label>Location *</label>
-          <input
-            type="text"
-            name="location"
-            required
-            value={formData.location}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
+              {/* Price */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">
+                  <FaDollarSign className="text-blue-500" />
+                  Price *
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  required
+                  value={formData.price}
+                  onChange={handleChange}
+                  className="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  placeholder="Enter price"
+                />
+              </div>
+            </div>
 
-        {/* Image URL */}
-        <div>
-          <label>Image URL *</label>
-          <input
-            type="url"
-            name="imageURL"
-            required
-            value={formData.imageURL}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
+            {/* Location */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">
+                <FaMapMarkerAlt className="text-blue-500" />
+                Location *
+              </label>
+              <input
+                type="text"
+                name="location"
+                required
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                placeholder="Enter property location"
+              />
+            </div>
 
-        {/* Update button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-2 bg-blue-600 text-white rounded"
-        >
-          {loading ? "Updating..." : "Update Property"}
-        </button>
-      </form>
-      
-      
+            {/* Image URL */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">
+                <FaImage className="text-blue-500" />
+                Image URL *
+              </label>
+              <input
+                type="url"
+                name="imageURL"
+                required
+                value={formData.imageURL}
+                onChange={handleChange}
+                className="w-full p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+
+            {/* Update Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-3"
+            >
+              {loading ? (
+                <>
+                  <FaSpinner className="animate-spin text-xl" />
+                  Updating Property...
+                </>
+              ) : (
+                <>
+                  <FaEdit />
+                  Update Property
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };

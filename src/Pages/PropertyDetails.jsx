@@ -1,197 +1,242 @@
-// ✅ Import and config at the TOP
+// src/Pages/PropertyDetails.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaSpinner, FaStar } from "react-icons/fa";
+import { FaSpinner, FaStar, FaMapMarkerAlt, FaTag, FaUser, FaCalendar, FaArrowLeft } from "react-icons/fa";
 import axios from "axios";
 import AuthContext from "../Context/AuthContext";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-
-// Component for displaying reviews
-const Reviews = ({ reviews }) => {
-  if (!reviews || reviews.length === 0) return <p>No reviews yet.</p>;
-
-  return (
-    <div className="space-y-4">
-      {reviews.map((r) => (
-        <div key={r._id} className="border rounded p-3 shadow-sm">
-          <p className="font-semibold">
-            {r.reviewerName} - {r.rating}{" "}
-            <FaStar className="inline text-yellow-500" />
-          </p>
-          <p className="text-gray-700">{r.reviewText}</p>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-// Component for submitting a new review
-const ReviewForm = ({ onAddReview }) => {
+const PropertyDetails = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+
+  const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Load property data
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/singleService/${id}`);
+        setProperty(response.data);
+      } catch (error) {
+        toast.error("Failed to load property");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [id]);
+
+  // Add review function
+  const addReview = async () => {
     if (!user) {
-      toast.error("You must be logged in to leave a review.");
+      toast.error("Please login to add review");
+      return;
+    }
+
+    if (!reviewText.trim()) {
+      toast.error("Please write a review");
       return;
     }
 
     setSubmitting(true);
-    const newReview = {
-      reviewerName: user.displayName || user.email,
-      rating,
-      reviewText,
-    };
-
-    onAddReview(newReview)
-      .then(() => {
-        setReviewText("");
-        setRating(5);
-      })
-      .finally(() => {
-        setSubmitting(false);
-      });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="mt-4 space-y-2">
-      <div>
-        <label className="block mb-1 font-medium">Your Rating</label>
-        <select
-          value={rating}
-          onChange={(e) => setRating(Number(e.target.value))}
-          className="border rounded p-1"
-        >
-          {[1, 2, 3, 4, 5].map((n) => (
-            <option key={n} value={n}>
-              {n} Star{n > 1 ? "s" : ""}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <textarea
-          value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
-          placeholder="Write your review..."
-          required
-          className="w-full border rounded p-2"
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={submitting}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-      >
-        {submitting ? "Submitting..." : "Submit Review"}
-      </button>
-    </form>
-  );
-};
-
-// Main property details component
-const PropertyDetails = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { user } = useContext(AuthContext); // ✅ Now available
-
-  const [property, setProperty] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // ✅ Fetch property
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-
-    axios
-      .get(`${API_BASE_URL}/singleService/${id}`)
-      .then((res) => setProperty(res.data))
-      .catch((err) => {
-        console.error("Failed to fetch property:", err);
-        setError("Property not found.");
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  // ✅ Submit review to backend
-  const addReview = async (reviewInput) => {
-    if (!user) return;
-
-    const reviewPayload = {
-      reviewerName: reviewInput.reviewerName,
-      rating: reviewInput.rating,
-      reviewText: reviewInput.reviewText,
-      userEmail: user.email,
-    };
 
     try {
-      const res = await axios.post(
-        `${API_BASE_URL}/singleService/${id}/reviews`,
-        reviewPayload
+      const newReview = {
+        reviewerName: user.displayName || user.email,
+        rating: rating,
+        reviewText: reviewText,
+        userEmail: user.email
+      };
+
+      const response = await axios.post(
+        `http://localhost:3000/singleService/${id}/reviews`,
+        newReview
       );
 
-      const newReview = res.data.review;
-      setProperty((prev) => ({
+      // Update property with new review
+      setProperty(prev => ({
         ...prev,
-        reviews: [...(prev.reviews || []), newReview],
+        reviews: [...(prev.reviews || []), response.data.review]
       }));
 
-      toast.success("Review submitted!");
-    } catch (err) {
-      console.error("Failed to submit review:", err);
-      toast.error("Failed to submit review. Please try again.");
+      setReviewText("");
+      setRating(5);
+      toast.success("Review added successfully!");
+    } catch (error) {
+      toast.error("Failed to add review");
+      console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  // Show loading
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
+        <FaSpinner className="animate-spin text-4xl text-blue-600" />
       </div>
     );
   }
 
-  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
-  if (!property) return <p className="text-center mt-10">Property not found.</p>;
+  // Show error if no property
+  if (!property) {
+    return (
+      <div className="text-center mt-10">
+        <p className="text-red-500 text-lg">Property not found</p>
+        <button 
+          onClick={() => navigate("/properties")}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Back to Properties
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="max-w-4xl mx-auto p-4">
+      {/* Back button */}
       <button
         onClick={() => navigate(-1)}
-        className="text-blue-600 font-semibold hover:underline"
+        className="flex items-center gap-2 text-blue-600 mb-6"
       >
-        &larr; Go Back
+        <FaArrowLeft />
+        <span>Back</span>
       </button>
 
+      {/* Property image */}
       <img
-        src={property.imageURL}
-        alt={property.name}
-        className="w-full h-96 object-cover rounded shadow"
+        src={property.image || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=400&fit=crop"}
+        alt={property.propertyName}
+        className="w-full h-64 object-cover rounded-lg mb-6"
       />
 
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">{property.name}</h1>
-        <p className="text-blue-600 font-medium">{property.category}</p>
-        <p>{property.description}</p>
-        <p className="text-xl font-bold">৳{property.price?.toLocaleString()}</p>
-        <p>📍 {property.location}</p>
-        <p className="text-gray-500">
-          Posted on: {property.postedDate} by {property.userName} ({property.userEmail})
+      {/* Property details */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {property.propertyName}
+        </h1>
+        
+        <div className="flex items-center gap-2 text-blue-600 mb-3">
+          <FaTag />
+          <span className="font-medium">{property.category}</span>
+        </div>
+
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          {property.description}
         </p>
+
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+            <FaMapMarkerAlt className="text-red-500" />
+            <span>{property.location}</span>
+          </div>
+          <div className="text-xl font-bold text-gray-900 dark:text-white">
+            ${property.price?.toLocaleString()}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-sm">
+          <FaUser />
+          <span>Posted by {property.userName}</span>
+          <FaCalendar />
+          <span>{new Date(property.postedDate).toLocaleDateString()}</span>
+        </div>
       </div>
 
-      <div>
-        <h3 className="text-2xl font-bold mb-4">Ratings & Reviews</h3>
-        <Reviews reviews={property.reviews} />
-        <ReviewForm onAddReview={addReview} />
+      {/* Reviews section */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          Reviews ({property.reviews?.length || 0})
+        </h2>
+
+        {/* Reviews list */}
+        {property.reviews?.length > 0 ? (
+          <div className="space-y-4 mb-6">
+            {property.reviews.map((review) => (
+              <div key={review._id} className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {review.reviewerName}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < review.rating ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300">{review.reviewText}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 dark:text-gray-400 mb-6">No reviews yet</p>
+        )}
+
+        {/* Add review form */}
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Add Your Review
+          </h3>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Rating
+              </label>
+              <select
+                value={rating}
+                onChange={(e) => setRating(Number(e.target.value))}
+                className="border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value={1}>1 Star</option>
+                <option value={2}>2 Stars</option>
+                <option value={3}>3 Stars</option>
+                <option value={4}>4 Stars</option>
+                <option value={5}>5 Stars</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Your Review
+              </label>
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Write your review here..."
+                rows="4"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+
+            <button
+              onClick={addReview}
+              disabled={submitting || !user}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded disabled:opacity-50"
+            >
+              {submitting ? "Submitting..." : "Submit Review"}
+            </button>
+
+            {!user && (
+              <p className="text-sm text-gray-500">Please login to add a review</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
