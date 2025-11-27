@@ -15,14 +15,15 @@ const PropertyCard = ({ property }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  // ✅ FIXED: Map API fields to your variable names
   const {
     _id,
-    propertyName,
+    name: propertyName,        // ← from "name" in DB
     category,
     description,
     location,
     price,
-    image,
+    imageURL: image,           // ← from "imageURL" in DB
     userName,
     postedDate
   } = property;
@@ -77,7 +78,7 @@ const PropertyCard = ({ property }) => {
   };
 
   return (
-    <div className="group bg-base-100 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-base-200 transform hover:scale-105 hover:-translate-y-2">
+    <div className="group bg-base-100 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border-4 stroke-3 border-base-200 transform hover:scale-105 hover:-translate-y-2">
       {/* Image Section */}
       <div className="relative h-64 overflow-hidden">
         {!imageLoaded && (
@@ -91,7 +92,7 @@ const PropertyCard = ({ property }) => {
             image ||
             "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=400&fit=crop"
           }
-          alt={propertyName}
+          alt={propertyName || "Property"} // ✅ fallback added
           className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
@@ -142,7 +143,7 @@ const PropertyCard = ({ property }) => {
       <div className="p-6">
         <div className="flex items-start justify-between mb-3">
           <h3 className="text-xl font-bold text-base-content line-clamp-1 group-hover:text-primary transition-colors duration-300 flex-1 pr-4">
-            {propertyName || "Modern Residence"}
+            {propertyName || "Modern Residence"} {/* ✅ Now shows real name */}
           </h3>
 
           <div className="flex items-center space-x-1 bg-primary/10 px-2 py-1 rounded-lg">

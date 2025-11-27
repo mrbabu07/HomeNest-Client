@@ -9,6 +9,8 @@ import { FaEye, FaHome, FaGoogle, FaLock, FaEnvelope } from "react-icons/fa";
 import { IoEyeOff } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { auth } from "../Firebase/Firebase.config";
+import Navbar from "../Component/Navbar";
+import Footer from "../Component/Footer";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -69,7 +71,10 @@ const Signin = () => {
   };
 
   return (
+    <div>
+      <Navbar />
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 dark:from-gray-900 dark:to-blue-900 flex items-center justify-center p-4">
+      
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
         {/* Header Section */}
         <div className="bg-gradient-to-r from-blue-600 to-teal-500 p-6 text-center">
@@ -144,7 +149,7 @@ const Signin = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:hover:shadow-lg"
+              className="w-full bg-gradient-to-r from-blue-800 to-teal-500 hover:from-blue-300 hover:to-teal-600 text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:hover:shadow-lg"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">
@@ -189,6 +194,12 @@ const Signin = () => {
         </div>
       </div>
     </div>
+    <div>
+      <Footer />
+    </div>
+    </div>
+    
+    
   );
 };
 

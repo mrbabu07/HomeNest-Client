@@ -129,14 +129,14 @@ const MyProperties = () => {
                           </Link>
                           <Link
                             to={`/update-property/${p._id}`}
-                            className="p-2 bg-secondary text-secondary-content rounded-lg hover:opacity-90 transition"
+                            className="p-2 bg-green-800 text-secondary-content rounded-lg hover:opacity-90 transition"
                             title="Edit"
                           >
                             <FaEdit />
                           </Link>
                           <button
                             onClick={() => handleDelete(p._id)}
-                            className="p-2 bg-error text-error-content rounded-lg hover:opacity-90 transition"
+                            className="p-2 bg-red-400 text-error-content rounded-lg hover:opacity-90 transition"
                             title="Delete"
                           >
                             <FaTrash />

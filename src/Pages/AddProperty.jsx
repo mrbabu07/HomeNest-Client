@@ -70,7 +70,7 @@ const AddProperty = () => {
   }
 
   return (
-    <div className="min-h-screen bg-base-100 py-8">
+    <div className="min-h-screen bg-base-100 py-8 ">
       <div className="max-w-3xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-10">
@@ -82,7 +82,7 @@ const AddProperty = () => {
         </div>
 
         {/* Form */}
-        <div className="bg-base-100 rounded-xl shadow border border-base-200 p-6">
+        <div className="bg-base-100 rounded-xl shadow  border-base-200 p-6 border-4 stroke-1-blue-500">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Property Name */}
             <div>

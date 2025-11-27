@@ -145,8 +145,8 @@ const Home = () => {
       <section className="mb-16" data-aos="fade-up">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-800 dark:text-white">Featured Properties</h2>
-            <p className="text-gray-600 dark:text-gray-300 mt-2">Handpicked selection of premium properties</p>
+            <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Featured Properties</h2>
+            <p className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mt-2">Handpicked selection of premium properties</p>
           </div>
           <Link 
             to="/properties" 
@@ -171,9 +171,9 @@ const Home = () => {
         )}
       </section>
 
-      {/* ---------------------- */}
+      
       {/* WHY CHOOSE US - Fixed width with theme colors */}
-      {/* ---------------------- */}
+      
       <section className="mb-16 bg-gray-50 dark:bg-gray-800 p-10 rounded-xl" data-aos="fade-right">
         <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
           Why Choose HomeNest?
@@ -205,11 +205,11 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ---------------------- */}
+      
       {/* HOW IT WORKS - Fixed width with theme support */}
-      {/* ---------------------- */}
+      
       <section className="mb-16" data-aos="fade-up">
-        <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
+        <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mb-12">
           How It Works
         </h2>
 
@@ -235,11 +235,9 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ---------------------- */}
-      {/* MARKET INSIGHTS - Fixed width with theme colors */}
-      {/* ---------------------- */}
+      
       <section data-aos="fade-up">
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-8">
+        <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mb-8">
           Latest Market Insights
         </h2>
 
@@ -263,10 +261,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ---------------------- */}
-      {/* CTA SECTION - Fixed width */}
-      {/* ---------------------- */}
-      <section className="mt-16 bg-blue-600 dark:bg-blue-800 rounded-2xl p-12 text-center" data-aos="fade-up">
+      
+      <section className="mt-16 bg-blue-600 dark:bg-gray-800 rounded-2xl p-12 text-center" data-aos="fade-up">
         <h2 className="text-3xl font-bold text-white mb-4">
           Ready to Find Your Dream Home?
         </h2>
