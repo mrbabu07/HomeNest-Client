@@ -1,3 +1,4 @@
+// src/Pages/AllProperties.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -10,23 +11,16 @@ const AllProperties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("newest");
 
-  // Load properties from /allServices WITH search & sort params
   const loadProperties = async () => {
     setLoading(true);
     try {
       const baseUrl = "http://localhost:3000/allServices";
       const params = new URLSearchParams();
-
       if (searchTerm) params.append("search", searchTerm);
       params.append("sortBy", sortOption);
 
       const response = await axios.get(`${baseUrl}?${params}`);
-
-      if (Array.isArray(response.data)) {
-        setProperties(response.data);
-      } else {
-        setProperties([]);
-      }
+      setProperties(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       toast.error("Failed to load properties.");
       setProperties([]);
@@ -40,45 +34,44 @@ const AllProperties = () => {
   }, [searchTerm, sortOption]);
 
   return (
-    <div className="bg-white dark:bg-gray-900 min-h-screen transition-colors duration-500">
+    <div className="bg-base-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
         
-        {/* Header Section */}
-        <div className="text-center mb-10" data-aos="fade-down">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 rounded-2xl shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 mb-5 transition-all duration-500 hover:scale-110 hover:rotate-3">
-            <FaHome className="text-2xl text-white" />
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-primary rounded-xl shadow mb-4">
+            <FaHome className="text-xl text-primary-content" />
           </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent transition-all duration-500">
+          <h2 className="text-3xl md:text-4xl font-bold text-base-content mb-3">
             All Properties
           </h2>
-          <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-500">
+          <p className="text-base-content/70 max-w-2xl mx-auto">
             Discover amazing properties tailored to your dreams
           </p>
         </div>
 
-        {/* Search & Sort Card */}
-        <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500" data-aos="fade-up">
+        {/* Search & Sort */}
+        <div className="mb-8 p-6 bg-base-100 rounded-xl shadow border border-base-200">
           <div className="flex flex-col md:flex-row gap-5">
-            
-            {/* Search Input */}
+            {/* Search */}
             <div className="flex-1">
-              <label className="flex items-center gap-2 mb-3 font-semibold text-gray-700 dark:text-gray-200 text-sm transition-colors duration-500">
-                <FaSearch className="text-blue-600 dark:text-blue-400" />
+              <label className="flex items-center gap-2 mb-3 font-medium text-base-content">
+                <FaSearch className="text-primary" />
                 Search by Name
               </label>
-              <div className="relative group">
+              <div className="relative">
                 <input
                   type="text"
                   placeholder="e.g. Gulshan Apartment"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-5 py-3 pl-12 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/20 dark:focus:ring-indigo-500/20 outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 pl-10 border border-base-200 rounded-lg bg-base-100 text-base-content focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                 />
-                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 group-focus-within:text-blue-600 dark:group-focus-within:text-indigo-400 transition-colors duration-300" />
+                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50" />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm("")}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600 hover:bg-red-500 dark:hover:bg-red-500 text-gray-700 dark:text-gray-300 hover:text-white transition-all duration-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-error"
                   >
                     ✕
                   </button>
@@ -86,82 +79,75 @@ const AllProperties = () => {
               </div>
             </div>
 
-            {/* Sort Dropdown */}
+            {/* Sort */}
             <div className="w-full md:w-64">
-              <label className="flex items-center gap-2 mb-3 font-semibold text-gray-700 dark:text-gray-200 text-sm transition-colors duration-500">
-                <FaSortAmountDown className="text-indigo-600 dark:text-indigo-400" />
+              <label className="flex items-center gap-2 mb-3 font-medium text-base-content">
+                <FaSortAmountDown className="text-primary" />
                 Sort By
               </label>
               <div className="relative">
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
-                  className="w-full px-5 py-3 pr-10 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white appearance-none cursor-pointer focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-500/20 dark:focus:ring-blue-500/20 outline-none transition-all duration-300"
+                  className="w-full px-4 py-2.5 pr-8 border border-base-200 rounded-lg bg-base-100 text-base-content appearance-none cursor-pointer focus:ring-2 focus:ring-primary outline-none"
                 >
                   <option value="price_asc">💰 Price: Low to High</option>
                   <option value="price_desc">💎 Price: High to Low</option>
                   <option value="newest">🆕 Newest First</option>
                   <option value="oldest">📅 Oldest First</option>
                 </select>
-                <FaFilter className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none transition-colors duration-500" />
+                <FaFilter className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 pointer-events-none" />
               </div>
             </div>
           </div>
 
           {/* Results Count */}
           {!loading && (
-            <div className="mt-5 pt-5 border-t border-gray-300 dark:border-gray-600 transition-colors duration-500">
-              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-500">
-                <span className="font-bold text-blue-600 dark:text-indigo-400">{properties.length}</span> properties found
+            <div className="mt-4 pt-4 border-t border-base-200">
+              <p className="text-sm text-base-content/70">
+                <span className="font-bold text-primary">{properties.length}</span> properties found
                 {searchTerm && (
-                  <span> matching <span className="font-semibold text-gray-800 dark:text-gray-200">"{searchTerm}"</span></span>
+                  <> matching <span className="font-medium">"{searchTerm}"</span></>
                 )}
               </p>
             </div>
           )}
         </div>
 
-        {/* Loading State */}
+        {/* Loading */}
         {loading ? (
-          <div className="flex flex-col justify-center items-center py-24 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 transition-all duration-500" data-aos="fade-up">
-            <div className="relative w-16 h-16 mb-5">
-              <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700 transition-colors duration-500"></div>
-              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 dark:border-t-indigo-400 animate-spin transition-colors duration-500"></div>
-            </div>
-            <p className="text-lg font-semibold text-gray-700 dark:text-gray-200 transition-colors duration-500">
-              Loading properties...
-            </p>
+          <div className="flex justify-center items-center h-64">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : properties.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-aos="fade-up">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map((property) => (
               <PropertyCard key={property._id} property={property} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-500" data-aos="fade-up">
-            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-500">
-              <FaSearch className="text-3xl text-gray-500 dark:text-gray-400 transition-colors duration-500" />
+          <div className="text-center py-16 bg-base-100 rounded-xl border border-base-200">
+            <div className="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FaSearch className="text-2xl text-base-content/50" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3 transition-colors duration-500">
+            <h3 className="text-xl font-semibold text-base-content mb-2">
               No Properties Found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto transition-colors duration-500">
-              {searchTerm 
+            <p className="text-base-content/70 max-w-md mx-auto">
+              {searchTerm
                 ? `We couldn't find any properties matching "${searchTerm}"`
                 : "No properties available at the moment"}
             </p>
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                className="mt-4 px-6 py-2 bg-primary text-primary-content font-medium rounded-lg hover:opacity-90 transition"
               >
                 Clear Search
               </button>
             )}
           </div>
         )}
-
       </div>
     </div>
   );

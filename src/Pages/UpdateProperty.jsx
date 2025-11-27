@@ -79,6 +79,7 @@ const UpdateProperty = () => {
       );
 
       if (response.data.result?.modifiedCount > 0) {
+        // ✅ TOAST IS ALREADY HERE — NO CHANGE NEEDED
         toast.success("Property updated successfully!");
         setTimeout(() => {
           navigate("/my-properties");
