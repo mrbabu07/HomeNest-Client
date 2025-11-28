@@ -1,10 +1,17 @@
-
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-import { FaSpinner, FaHome, FaEdit, FaDollarSign, FaMapMarkerAlt, FaImage, FaTag } from "react-icons/fa";
+import {
+  FaSpinner,
+  FaHome,
+  FaEdit,
+  FaDollarSign,
+  FaMapMarkerAlt,
+  FaImage,
+  FaTag,
+} from "react-icons/fa";
 
 const UpdateProperty = () => {
   const { id } = useParams();
@@ -23,38 +30,39 @@ const UpdateProperty = () => {
   });
 
   useEffect(() => {
-  const loadPropertyData = async () => {
-    setLoading(true);
-    setFetchError(null);
+    const loadPropertyData = async () => {
+      setLoading(true);
+      setFetchError(null);
 
-    try {
-      const res = await axios.get(`http://localhost:3000/singleService/${id}`);
+      try {
+        const res = await axios.get(
+          `https://home-nest-server-10.vercel.app/singleService/${id}`
+        );
 
-      if (res.data) {
-        setFormData(res.data);
-      } else {
-        setFetchError("Property not found");
+        if (res.data) {
+          setFormData(res.data);
+        } else {
+          setFetchError("Property not found");
+        }
+      } catch (err) {
+        console.log("Error loading property:", err);
+        setFetchError("Failed to load property data");
       }
-    } catch (err) {
-      console.log("Error loading property:", err);
-      setFetchError("Failed to load property data");
-    }
 
-    setLoading(false);
+      setLoading(false);
+    };
+
+    loadPropertyData();
+  }, [id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
-
-  loadPropertyData();
-}, [id]);
-
-const handleChange = (e) => {
-  const { name, value } = e.target;
-
-  setFormData((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,7 +84,7 @@ const handleChange = (e) => {
       };
 
       const response = await axios.put(
-        `http://localhost:3000/updateService/${id}`,
+        `https://home-nest-server-10.vercel.app/updateService/${id}`,
         dataToSend
       );
 
@@ -136,7 +144,6 @@ const handleChange = (e) => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-500">
       <div className="max-w-2xl mx-auto px-4">
-        
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 rounded-2xl shadow-lg mb-4 transition-all duration-500">
@@ -153,7 +160,6 @@ const handleChange = (e) => {
         {/* Form Container */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 md:p-8 transition-all duration-500">
           <form onSubmit={handleSubmit} className="space-y-6">
-            
             {/* Property Name */}
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">

@@ -1,7 +1,14 @@
-
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaSpinner, FaStar, FaMapMarkerAlt, FaTag, FaUser, FaCalendar, FaArrowLeft } from "react-icons/fa";
+import {
+  FaSpinner,
+  FaStar,
+  FaMapMarkerAlt,
+  FaTag,
+  FaUser,
+  FaCalendar,
+  FaArrowLeft,
+} from "react-icons/fa";
 import axios from "axios";
 import AuthContext from "../Context/AuthContext";
 import { toast } from "react-hot-toast";
@@ -21,7 +28,9 @@ const PropertyDetails = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/singleService/${id}`);
+        const response = await axios.get(
+          `https://home-nest-server-10.vercel.app/singleService/${id}`
+        );
         setProperty(response.data);
       } catch (error) {
         toast.error("Failed to load property");
@@ -53,18 +62,18 @@ const PropertyDetails = () => {
         reviewerName: user.displayName || user.email,
         rating: rating,
         reviewText: reviewText,
-        userEmail: user.email
+        userEmail: user.email,
       };
 
       const response = await axios.post(
-        `http://localhost:3000/singleService/${id}/reviews`,
+        `https://home-nest-server-10.vercel.app/singleService/${id}/reviews`,
         newReview
       );
 
       // Update property with new review
-      setProperty(prev => ({
+      setProperty((prev) => ({
         ...prev,
-        reviews: [...(prev.reviews || []), response.data.review]
+        reviews: [...(prev.reviews || []), response.data.review],
       }));
 
       setReviewText("");
@@ -92,7 +101,7 @@ const PropertyDetails = () => {
     return (
       <div className="text-center mt-10">
         <p className="text-red-500 text-lg">Property not found</p>
-        <button 
+        <button
           onClick={() => navigate("/properties")}
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
         >
@@ -115,7 +124,10 @@ const PropertyDetails = () => {
 
       {/* Property image */}
       <img
-        src={property.image || "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=400&fit=crop"}
+        src={
+          property.image ||
+          "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=400&fit=crop"
+        }
         alt={property.propertyName}
         className="w-full h-64 object-cover rounded-lg mb-6"
       />
@@ -125,7 +137,7 @@ const PropertyDetails = () => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           {property.propertyName}
         </h1>
-        
+
         <div className="flex items-center gap-2 text-blue-600 mb-3">
           <FaTag />
           <span className="font-medium">{property.category}</span>
@@ -163,7 +175,10 @@ const PropertyDetails = () => {
         {property.reviews?.length > 0 ? (
           <div className="space-y-4 mb-6">
             {property.reviews.map((review) => (
-              <div key={review._id} className="border-b border-gray-200 dark:border-gray-700 pb-4">
+              <div
+                key={review._id}
+                className="border-b border-gray-200 dark:border-gray-700 pb-4"
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="font-medium text-gray-900 dark:text-white">
                     {review.reviewerName}
@@ -173,18 +188,24 @@ const PropertyDetails = () => {
                       <FaStar
                         key={i}
                         className={`w-4 h-4 ${
-                          i < review.rating ? "text-yellow-400" : "text-gray-300"
+                          i < review.rating
+                            ? "text-yellow-400"
+                            : "text-gray-300"
                         }`}
                       />
                     ))}
                   </div>
                 </div>
-                <p className="text-gray-700 dark:text-gray-300">{review.reviewText}</p>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {review.reviewText}
+                </p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400 mb-6">No reviews yet</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
+            No reviews yet
+          </p>
         )}
 
         {/* Add review form */}
@@ -233,7 +254,9 @@ const PropertyDetails = () => {
             </button>
 
             {!user && (
-              <p className="text-sm text-gray-500">Please login to add a review</p>
+              <p className="text-sm text-gray-500">
+                Please login to add a review
+              </p>
             )}
           </div>
         </div>

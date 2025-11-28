@@ -32,7 +32,7 @@ const Home = () => {
   // Load Featured Properties - EXACT SAME FUNCTIONALITY
   const fetchFeaturedProperties = () => {
     axios
-      .get("http://localhost:3000/getServices")
+      .get("https://home-nest-server-10.vercel.app/getServices")
       .then((res) => {
         setProperties(res.data.slice(0, 6));
         setLoading(false);

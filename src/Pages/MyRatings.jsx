@@ -18,7 +18,7 @@ const MyRatings = () => {
     const fetchReviews = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/reviewsByUser/${user.email}`
+          `https://home-nest-server-10.vercel.app/reviewsByUser/${user.email}`
         );
         setReviews(Array.isArray(res.data) ? res.data : []);
       } catch (err) {

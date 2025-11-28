@@ -16,31 +16,30 @@ const AllProperties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("newest");
 
- const loadProperties = async () => {
-  setLoading(true);
-  try {
-    const params = new URLSearchParams();
+  const loadProperties = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
 
-    if (searchTerm) {
-      params.append("search", searchTerm);
+      if (searchTerm) {
+        params.append("search", searchTerm);
+      }
+
+      params.append("sortBy", sortOption);
+
+      // Direct full URL (no baseUrl variable)
+      const response = await axios.get(
+        `https://home-nest-server-10.vercel.app/allServices?${params.toString()}`
+      );
+
+      setProperties(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      toast.error("Failed to load properties.");
+      setProperties([]);
+    } finally {
+      setLoading(false);
     }
-
-    params.append("sortBy", sortOption);
-
-    // Direct full URL (no baseUrl variable)
-    const response = await axios.get(
-      `http://localhost:3000/allServices?${params.toString()}`
-    );
-
-    setProperties(Array.isArray(response.data) ? response.data : []);
-  } catch (error) {
-    toast.error("Failed to load properties.");
-    setProperties([]);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   useEffect(() => {
     loadProperties();

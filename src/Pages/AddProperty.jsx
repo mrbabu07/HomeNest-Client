@@ -4,7 +4,14 @@ import { useNavigate } from "react-router-dom";
 import AuthContext from "../Context/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-import { FaHome, FaMapMarkerAlt, FaDollarSign, FaImage, FaUser, FaEnvelope } from "react-icons/fa";
+import {
+  FaHome,
+  FaMapMarkerAlt,
+  FaDollarSign,
+  FaImage,
+  FaUser,
+  FaEnvelope,
+} from "react-icons/fa";
 
 const AddProperty = () => {
   const { user } = useContext(AuthContext);
@@ -40,7 +47,10 @@ const AddProperty = () => {
     };
 
     try {
-      const res = await axios.post("http://localhost:3000/addService", payload);
+      const res = await axios.post(
+        "https://home-nest-server-10.vercel.app/addService",
+        payload
+      );
       if (res.data.insertedId) {
         toast.success("Property added successfully!");
         setTimeout(() => navigate("/my-properties"), 1200);
@@ -62,8 +72,12 @@ const AddProperty = () => {
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <FaHome className="text-2xl text-primary-content" />
           </div>
-          <h3 className="text-xl font-bold text-base-content mb-2">Login Required</h3>
-          <p className="text-base-content/70">You must log in first to add a property.</p>
+          <h3 className="text-xl font-bold text-base-content mb-2">
+            Login Required
+          </h3>
+          <p className="text-base-content/70">
+            You must log in first to add a property.
+          </p>
         </div>
       </div>
     );
@@ -77,8 +91,12 @@ const AddProperty = () => {
           <div className="inline-flex items-center justify-center w-14 h-14 bg-primary rounded-xl shadow mb-4">
             <FaHome className="text-xl text-primary-content" />
           </div>
-          <h2 className="text-3xl font-bold text-base-content mb-3">Add New Property</h2>
-          <p className="text-base-content/70">Share your property with thousands of potential buyers and renters</p>
+          <h2 className="text-3xl font-bold text-base-content mb-3">
+            Add New Property
+          </h2>
+          <p className="text-base-content/70">
+            Share your property with thousands of potential buyers and renters
+          </p>
         </div>
 
         {/* Form */}
@@ -102,7 +120,9 @@ const AddProperty = () => {
 
             {/* Description */}
             <div>
-              <label className="block mb-2 font-medium text-base-content">Description *</label>
+              <label className="block mb-2 font-medium text-base-content">
+                Description *
+              </label>
               <textarea
                 name="description"
                 rows="4"
@@ -117,7 +137,9 @@ const AddProperty = () => {
             {/* Category & Price */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2 font-medium text-base-content">Category *</label>
+                <label className="block mb-2 font-medium text-base-content">
+                  Category *
+                </label>
                 <select
                   name="category"
                   required
@@ -217,9 +239,8 @@ const AddProperty = () => {
           </form>
         </div>
       </div>
-      <ToastContainer position="center"/>
+      <ToastContainer position="center" />
     </div>
-    
   );
 };
 

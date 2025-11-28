@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -12,29 +11,31 @@ const MyProperties = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  if (!user?.email) return;
+    if (!user?.email) return;
 
-  setLoading(true);
+    setLoading(true);
 
-  axios
-    .get("http://localhost:3000/allServices", {
-      params: { email: user.email },
-    })
-    .then((res) => {
-      setProperties(res.data);
-      setLoading(false);
-    })
-    .catch(() => {
-      toast.error("Couldn't load your properties.");
-      setLoading(false);
-    });
-}, [user]);
-
+    axios
+      .get("https://home-nest-server-10.vercel.app/allServices", {
+        params: { email: user.email },
+      })
+      .then((res) => {
+        setProperties(res.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error("Couldn't load your properties.");
+        setLoading(false);
+      });
+  }, [user]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this property?")) return;
+    if (!window.confirm("Are you sure you want to delete this property?"))
+      return;
     try {
-      await axios.delete(`http://localhost:3000/deleteService/${id}`);
+      await axios.delete(
+        `https://home-nest-server-10.vercel.app/deleteService/${id}`
+      );
       setProperties((prev) => prev.filter((p) => p._id !== id));
       toast.success("Property deleted successfully!");
     } catch {
@@ -49,8 +50,12 @@ const MyProperties = () => {
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl text-primary-content">🏠</span>
           </div>
-          <h3 className="text-xl font-bold text-base-content mb-2">Login Required</h3>
-          <p className="text-base-content/70">You must log in to view your properties.</p>
+          <h3 className="text-xl font-bold text-base-content mb-2">
+            Login Required
+          </h3>
+          <p className="text-base-content/70">
+            You must log in to view your properties.
+          </p>
         </div>
       </div>
     );
@@ -68,15 +73,23 @@ const MyProperties = () => {
     <div className="min-h-screen bg-base-100 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-base-content">My Properties</h1>
-          <p className="text-base-content/70 mt-2">Manage all your listed properties</p>
+          <h1 className="text-3xl font-bold text-base-content">
+            My Properties
+          </h1>
+          <p className="text-base-content/70 mt-2">
+            Manage all your listed properties
+          </p>
         </div>
 
         {properties.length === 0 ? (
           <div className="text-center py-16 bg-base-100 rounded-lg shadow border border-base-200 max-w-2xl mx-auto">
             <div className="text-5xl mb-4 text-base-content/50">🏠</div>
-            <h3 className="text-xl font-semibold text-base-content mb-2">No Properties Yet</h3>
-            <p className="text-base-content/70 mb-6">Start by adding your first property</p>
+            <h3 className="text-xl font-semibold text-base-content mb-2">
+              No Properties Yet
+            </h3>
+            <p className="text-base-content/70 mb-6">
+              Start by adding your first property
+            </p>
             <Link
               to="/add-property"
               className="inline-block px-6 py-2 bg-primary text-primary-content rounded-lg hover:opacity-90 transition"
@@ -112,13 +125,17 @@ const MyProperties = () => {
                           }}
                         />
                       </td>
-                      <td className="p-4 font-medium text-base-content">{p.name}</td>
+                      <td className="p-4 font-medium text-base-content">
+                        {p.name}
+                      </td>
                       <td className="p-4">
                         <span className="px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
                           {p.category}
                         </span>
                       </td>
-                      <td className="p-4 font-bold text-base-content">৳{p.price?.toLocaleString()}</td>
+                      <td className="p-4 font-bold text-base-content">
+                        ৳{p.price?.toLocaleString()}
+                      </td>
                       <td className="p-4 text-base-content/80">{p.location}</td>
                       <td className="p-4">
                         <div className="flex justify-center gap-2">
@@ -165,9 +182,15 @@ const MyProperties = () => {
                       }}
                     />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-base-content mb-1">{p.name}</h3>
-                      <p className="text-sm text-base-content/70 mb-1">{p.location}</p>
-                      <p className="font-bold text-base-content">৳{p.price?.toLocaleString()}</p>
+                      <h3 className="font-semibold text-base-content mb-1">
+                        {p.name}
+                      </h3>
+                      <p className="text-sm text-base-content/70 mb-1">
+                        {p.location}
+                      </p>
+                      <p className="font-bold text-base-content">
+                        ৳{p.price?.toLocaleString()}
+                      </p>
                       <span className="inline-block mt-2 px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
                         {p.category}
                       </span>
