@@ -31,17 +31,13 @@ const Home = () => {
 
   // Load Featured Properties - EXACT SAME FUNCTIONALITY
   const fetchFeaturedProperties = () => {
-    const API_BASE_URL =
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-
     axios
-      .get(`${API_BASE_URL}/getServices`)
+      .get("http://localhost:3000/getServices")
       .then((res) => {
         setProperties(res.data.slice(0, 6));
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
         setError("Failed to load properties.");
         setLoading(false);
       });
@@ -99,9 +95,8 @@ const Home = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* ---------------------- */}
       {/* HERO SLIDER - Fixed width container */}
-      {/* ---------------------- */}
+
       <div
         className="relative mb-14 rounded-2xl overflow-hidden shadow-xl"
         data-aos="zoom-in"
@@ -142,9 +137,8 @@ const Home = () => {
         </Swiper>
       </div>
 
-      {/* ---------------------- */}
       {/* FEATURED PROPERTIES - Fixed width */}
-      {/* ---------------------- */}
+
       <section className="mb-16" data-aos="fade-up">
         <div className="flex justify-between items-center mb-8">
           <div>

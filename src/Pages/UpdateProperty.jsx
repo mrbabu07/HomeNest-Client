@@ -23,36 +23,38 @@ const UpdateProperty = () => {
   });
 
   useEffect(() => {
-    const loadPropertyData = async () => {
-      setLoading(true);
-      setFetchError(null);
+  const loadPropertyData = async () => {
+    setLoading(true);
+    setFetchError(null);
 
-      try {
-        const response = await axios.get(`http://localhost:3000/singleService/${id}`);
-        
-        if (response.data) {
-          setFormData(response.data);
-        } else {
-          setFetchError("Property not found");
-        }
-      } catch (error) {
-        console.error("Error loading property:", error);
-        setFetchError("Failed to load property data");
-      } finally {
-        setLoading(false);
+    try {
+      const res = await axios.get(`http://localhost:3000/singleService/${id}`);
+
+      if (res.data) {
+        setFormData(res.data);
+      } else {
+        setFetchError("Property not found");
       }
-    };
+    } catch (err) {
+      console.log("Error loading property:", err);
+      setFetchError("Failed to load property data");
+    }
 
-    loadPropertyData();
-  }, [id]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setLoading(false);
   };
+
+  loadPropertyData();
+}, [id]);
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

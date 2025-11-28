@@ -11,23 +11,25 @@ const MyProperties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-
   useEffect(() => {
-    if (!user?.email) return;
+  if (!user?.email) return;
 
-    setLoading(true);
-    axios
-      .get(`${API_BASE_URL}/allServices`, { params: { email: user.email } })
-      .then((res) => {
-        setProperties(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        toast.error("Couldn't load your properties.");
-        setLoading(false);
-      });
-  }, [user]);
+  setLoading(true);
+
+  axios
+    .get("http://localhost:3000/allServices", {
+      params: { email: user.email },
+    })
+    .then((res) => {
+      setProperties(res.data);
+      setLoading(false);
+    })
+    .catch(() => {
+      toast.error("Couldn't load your properties.");
+      setLoading(false);
+    });
+}, [user]);
+
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
