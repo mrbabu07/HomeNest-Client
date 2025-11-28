@@ -34,7 +34,7 @@ const MyProperties = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
     try {
-      await axios.delete(`${API_BASE_URL}/deleteService/${id}`);
+      await axios.delete(`http://localhost:3000/deleteService/${id}`);
       setProperties((prev) => prev.filter((p) => p._id !== id));
       toast.success("Property deleted successfully!");
     } catch {
