@@ -4,8 +4,7 @@ A modern, full-stack real estate platform where property owners can list their p
 
 ## 🚀 Live Demo
 
-**Live Site URL:https://petcozy-a9-project.netlify.app/
-
+**Live Site URL: https://homenest-realstate-service-10.netlify.app/
 ## ✨ Key Features
 
 - **🏠 Comprehensive Property Listings** - Browse through a wide variety of properties with detailed descriptions, high-quality images, and accurate pricing
