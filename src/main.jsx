@@ -7,6 +7,9 @@ import { RouterProvider } from "react-router-dom";
 import { router } from "./Routes/Router";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "./Context/AuthProvider";
+import ErrorBoundary from "./Component/ErrorBoundary";
+
+
 
 function App() {
   useEffect(() => {
@@ -27,6 +30,8 @@ function App() {
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    <ErrorBoundary>
     <App />
+    </ErrorBoundary>
   </StrictMode>
 );

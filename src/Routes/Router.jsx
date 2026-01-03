@@ -12,6 +12,9 @@ import Register from "../Pages/Register";
 import NotFound from "../Pages/NotFound";
 import PrivateRoute from "./PrivateRoute";
 import UpdateProperty from "../Pages/UpdateProperty";
+import Contact from "../Pages/Contact";
+import Privacy from "../Pages/Privacy";
+import Favorites from "../Pages/Favorites";
 
 const MainLayout = () => (
   <>
@@ -35,6 +38,9 @@ export const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       { path: "/properties", element: <AllProperties /> },
+      {path: "/contact", element: <Contact />},
+      {path: "/privacy", element: <Privacy />},
+      {path: "/favorites", element: <Favorites/>},
       {
         path: "/add-property",
         element: (
@@ -85,6 +91,7 @@ export const router = createBrowserRouter([
       
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
+      
       
     ],
     
