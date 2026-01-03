@@ -32,7 +32,7 @@
 //   // Load Featured Properties - EXACT SAME FUNCTIONALITY
 //   const fetchFeaturedProperties = () => {
 //     axios
-//       .get("http://localhost:3000/getServices")
+//       .get("https://home-nest-server-10.vercel.app/getServices")
 //       .then((res) => {
 //         setProperties(res.data.slice(0, 6));
 //         setLoading(false);
@@ -320,6 +320,7 @@ import {
   FaChartLine,
   FaHeadset,
   FaArrowRight,
+  
 } from "react-icons/fa6";
 import { FaArrowUp, FaCheckCircle } from "react-icons/fa";
 
@@ -347,14 +348,16 @@ const Home = () => {
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 600);
     };
-
+    
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const fetchFeaturedProperties = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getServices");
+      const response = await axios.get(
+        "https://home-nest-server-10.vercel.app/getServices"
+      );
       setProperties(response.data.slice(0, 6));
       // Set total property count
       setTotalProperties(response.data.length);
@@ -368,7 +371,9 @@ const Home = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/stats");
+      const response = await axios.get(
+        "https://home-nest-server-10.vercel.app/api/stats"
+      );
       setStats(response.data);
       if (response.data.total) {
         setTotalProperties(response.data.total);
@@ -386,7 +391,10 @@ const Home = () => {
     setSubscribing(true);
     try {
       // Replace with your actual newsletter API endpoint
-      await axios.post("http://localhost:3000/api/newsletter", { email });
+      await axios.post(
+        "https://home-nest-server-10.vercel.app/api/newsletter",
+        { email }
+      );
       alert(`Thank you! We'll send updates to: ${email}`);
       setEmail("");
     } catch (err) {
@@ -405,13 +413,7 @@ const Home = () => {
   ];
 
   const statsData = [
-    {
-      value:
-        totalProperties > 0
-          ? `${(totalProperties / 1000).toFixed(1)}K+`
-          : `${(stats.total / 1000).toFixed(1)}K+`,
-      label: "Listings",
-    },
+    { value: totalProperties > 0 ? `${(totalProperties / 1000).toFixed(1)}K+` : `${(stats.total / 1000).toFixed(1)}K+`, label: "Listings" },
     { value: `${(stats.users / 1000).toFixed(1)}K+`, label: "Happy Users" },
     { value: `${stats.verified}%`, label: "Verified" },
     { value: stats.support, label: "Support" },
@@ -546,10 +548,7 @@ const Home = () => {
                   loading={i === 0 ? "eager" : "lazy"}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70 flex items-center justify-center">
-                  <div
-                    className="text-center px-4 max-w-4xl"
-                    data-aos="fade-up"
-                  >
+                  <div className="text-center px-4 max-w-4xl" data-aos="fade-up">
                     <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
                       Find Your Dream Home with HomeNest
                     </h1>
@@ -622,9 +621,7 @@ const Home = () => {
           {/* Total Properties Counter */}
           <div className="text-center mb-8 p-6 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl border border-primary/20">
             <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-              {totalProperties > 0
-                ? totalProperties.toLocaleString()
-                : stats.total.toLocaleString()}
+              {totalProperties > 0 ? totalProperties.toLocaleString() : stats.total.toLocaleString()}
             </div>
             <div className="text-base-content/70 font-medium text-lg">
               Total Properties Listed
@@ -787,9 +784,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div>
-                      <p className="font-semibold text-base-content">
-                        {t.name}
-                      </p>
+                      <p className="font-semibold text-base-content">{t.name}</p>
                       <p className="text-sm text-base-content/60">{t.role}</p>
                     </div>
                   </div>
@@ -853,11 +848,7 @@ const Home = () => {
                 data-aos="fade-up"
                 data-aos-delay={i * 50}
               >
-                <input
-                  type="radio"
-                  name="faq-accordion"
-                  defaultChecked={i === 0}
-                />
+                <input type="radio" name="faq-accordion" defaultChecked={i === 0} />
                 <div className="collapse-title text-lg font-semibold">
                   {faq.q}
                 </div>
