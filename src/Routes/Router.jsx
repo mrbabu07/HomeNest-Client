@@ -15,6 +15,9 @@ import UpdateProperty from "../Pages/UpdateProperty";
 import Contact from "../Pages/Contact";
 import Privacy from "../Pages/Privacy";
 import Favorites from "../Pages/Favorites";
+import Dashboard from "../Pages/Dashboard";
+import Profile from "../Pages/Profile";
+import Settings from "../Pages/Settings";
 
 const MainLayout = () => (
   <>
@@ -78,6 +81,30 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <PropertyDetails />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard",
+        element: (
+          <PrivateRoute>
+            <Dashboard/>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <PrivateRoute>
+            <Profile/>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/settings",
+        element: (
+          <PrivateRoute>
+            <Settings/>
           </PrivateRoute>
         ),
       },
