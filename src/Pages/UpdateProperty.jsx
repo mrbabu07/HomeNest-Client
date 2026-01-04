@@ -36,7 +36,7 @@
 
 //       try {
 //         const res = await axios.get(
-//           `http://localhost:3000/singleService/${id}`
+//           `https://home-nest-server-10.vercel.app/singleService/${id}`
 //         );
 
 //         if (res.data) {
@@ -84,7 +84,7 @@
 //       };
 
 //       const response = await axios.put(
-//         `http://localhost:3000/updateService/${id}`,
+//         `https://home-nest-server-10.vercel.app/updateService/${id}`,
 //         dataToSend
 //       );
 
@@ -347,7 +347,7 @@ const UpdateProperty = () => {
       try {
         // ✅ FIXED: Removed extra spaces
         const res = await axios.get(
-          `http://localhost:3000/singleService/${id}`
+          `https://home-nest-server-10.vercel.app/singleService/${id}`
         );
 
         if (res.data) {
@@ -456,7 +456,10 @@ const UpdateProperty = () => {
       };
 
       // ✅ FIXED: Clean URL
-      await axios.put(`http://localhost:3000/updateService/${id}`, payload);
+      await axios.put(
+        `https://home-nest-server-10.vercel.app/updateService/${id}`,
+        payload
+      );
 
       toast.success("Property updated successfully!");
       setTimeout(() => navigate("/my-properties"), 1500);

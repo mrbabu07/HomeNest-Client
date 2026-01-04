@@ -39,7 +39,7 @@ const MyRatings = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `http://localhost:3000/reviewsByUser/${user.email}`
+        `https://home-nest-server-10.vercel.app/reviewsByUser/${user.email}`
       );
       const reviewsData = Array.isArray(res.data) ? res.data : [];
       setReviews(reviewsData);
@@ -55,12 +55,17 @@ const MyRatings = () => {
   // Calculate statistics
   const stats = {
     totalReviews: reviews.length,
-    avgRating: reviews.length > 0
-      ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length).toFixed(1)
-      : 0,
+    avgRating:
+      reviews.length > 0
+        ? (
+            reviews.reduce((sum, r) => sum + (r.rating || 0), 0) /
+            reviews.length
+          ).toFixed(1)
+        : 0,
     fiveStarReviews: reviews.filter((r) => r.rating === 5).length,
     recentReviews: reviews.filter(
-      (r) => new Date(r.dateAdded) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      (r) =>
+        new Date(r.dateAdded) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     ).length,
   };
 
@@ -87,9 +92,14 @@ const MyRatings = () => {
   const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
     stars: rating,
     count: reviews.filter((r) => r.rating === rating).length,
-    percentage: reviews.length > 0
-      ? ((reviews.filter((r) => r.rating === rating).length / reviews.length) * 100).toFixed(0)
-      : 0,
+    percentage:
+      reviews.length > 0
+        ? (
+            (reviews.filter((r) => r.rating === rating).length /
+              reviews.length) *
+            100
+          ).toFixed(0)
+        : 0,
   }));
 
   // Loading state
@@ -112,7 +122,9 @@ const MyRatings = () => {
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <FaStar className="text-2xl text-primary-content" />
           </div>
-          <h2 className="text-2xl font-bold text-base-content mb-2">Login Required</h2>
+          <h2 className="text-2xl font-bold text-base-content mb-2">
+            Login Required
+          </h2>
           <p className="text-base-content/70 mb-6">
             Please log in to view your ratings and reviews.
           </p>
@@ -134,8 +146,12 @@ const MyRatings = () => {
               <FaStar className="text-2xl text-primary-content" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-base-content">My Ratings & Reviews</h1>
-              <p className="text-base-content/70">Your feedback and experiences with properties</p>
+              <h1 className="text-3xl font-bold text-base-content">
+                My Ratings & Reviews
+              </h1>
+              <p className="text-base-content/70">
+                Your feedback and experiences with properties
+              </p>
             </div>
           </div>
         </div>
@@ -150,7 +166,9 @@ const MyRatings = () => {
                   <MessageSquare size={24} />
                 </div>
               </div>
-              <div className="text-3xl font-bold mb-1">{stats.totalReviews}</div>
+              <div className="text-3xl font-bold mb-1">
+                {stats.totalReviews}
+              </div>
               <div className="text-sm opacity-90">Total Reviews</div>
             </div>
 
@@ -172,7 +190,9 @@ const MyRatings = () => {
                   <Award size={24} />
                 </div>
               </div>
-              <div className="text-3xl font-bold mb-1">{stats.fiveStarReviews}</div>
+              <div className="text-3xl font-bold mb-1">
+                {stats.fiveStarReviews}
+              </div>
               <div className="text-sm opacity-90">5-Star Reviews</div>
             </div>
 
@@ -183,7 +203,9 @@ const MyRatings = () => {
                   <TrendingUp size={24} />
                 </div>
               </div>
-              <div className="text-3xl font-bold mb-1">{stats.recentReviews}</div>
+              <div className="text-3xl font-bold mb-1">
+                {stats.recentReviews}
+              </div>
               <div className="text-sm opacity-90">Last 30 Days</div>
             </div>
           </div>
@@ -195,9 +217,12 @@ const MyRatings = () => {
             <div className="w-20 h-20 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-4">
               <FaComments className="text-3xl text-base-content/40" />
             </div>
-            <h3 className="text-2xl font-semibold text-base-content mb-2">No Reviews Yet</h3>
+            <h3 className="text-2xl font-semibold text-base-content mb-2">
+              No Reviews Yet
+            </h3>
             <p className="text-base-content/70 max-w-md mx-auto mb-6">
-              You haven't rated any properties yet. Start exploring and share your experiences!
+              You haven't rated any properties yet. Start exploring and share
+              your experiences!
             </p>
             <Link to="/properties" className="btn btn-primary gap-2">
               <FaHome /> Browse Properties
@@ -208,23 +233,30 @@ const MyRatings = () => {
             {/* Left Column - Rating Distribution */}
             <div className="lg:col-span-1">
               <div className="bg-base-100 rounded-xl shadow-lg border border-base-200 p-6 sticky top-6">
-                <h2 className="text-xl font-bold text-base-content mb-6">Rating Distribution</h2>
+                <h2 className="text-xl font-bold text-base-content mb-6">
+                  Rating Distribution
+                </h2>
 
                 {/* Overall Rating */}
                 <div className="text-center mb-6 pb-6 border-b border-base-200">
-                  <div className="text-5xl font-bold text-primary mb-2">{stats.avgRating}</div>
+                  <div className="text-5xl font-bold text-primary mb-2">
+                    {stats.avgRating}
+                  </div>
                   <div className="flex items-center justify-center gap-1 mb-2">
                     {[...Array(5)].map((_, i) => (
                       <FaStar
                         key={i}
                         className={`text-xl ${
-                          i < Math.round(stats.avgRating) ? "text-warning" : "text-base-300"
+                          i < Math.round(stats.avgRating)
+                            ? "text-warning"
+                            : "text-base-300"
                         }`}
                       />
                     ))}
                   </div>
                   <p className="text-sm text-base-content/70">
-                    Based on {stats.totalReviews} {stats.totalReviews === 1 ? "review" : "reviews"}
+                    Based on {stats.totalReviews}{" "}
+                    {stats.totalReviews === 1 ? "review" : "reviews"}
                   </p>
                 </div>
 
@@ -233,7 +265,9 @@ const MyRatings = () => {
                   {ratingDistribution.map((item) => (
                     <div key={item.stars} className="flex items-center gap-3">
                       <div className="flex items-center gap-1 min-w-[60px]">
-                        <span className="text-sm font-medium text-base-content">{item.stars}</span>
+                        <span className="text-sm font-medium text-base-content">
+                          {item.stars}
+                        </span>
                         <FaStar className="text-warning text-xs" />
                       </div>
                       <div className="flex-1">
@@ -253,7 +287,9 @@ const MyRatings = () => {
 
                 {/* Filters */}
                 <div className="mt-6 pt-6 border-t border-base-200">
-                  <h3 className="font-semibold text-base-content mb-3">Filter by Rating</h3>
+                  <h3 className="font-semibold text-base-content mb-3">
+                    Filter by Rating
+                  </h3>
                   <select
                     value={filterRating}
                     onChange={(e) => setFilterRating(e.target.value)}
@@ -267,7 +303,9 @@ const MyRatings = () => {
                     <option value="1">1 Star</option>
                   </select>
 
-                  <h3 className="font-semibold text-base-content mb-3">Sort By</h3>
+                  <h3 className="font-semibold text-base-content mb-3">
+                    Sort By
+                  </h3>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
@@ -282,14 +320,22 @@ const MyRatings = () => {
 
                 {/* Quick Stats */}
                 <div className="mt-6 pt-6 border-t border-base-200">
-                  <h3 className="font-semibold text-base-content mb-3">Quick Stats</h3>
+                  <h3 className="font-semibold text-base-content mb-3">
+                    Quick Stats
+                  </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-base-content/70">Properties Reviewed</span>
-                      <span className="font-semibold text-base-content">{reviews.length}</span>
+                      <span className="text-base-content/70">
+                        Properties Reviewed
+                      </span>
+                      <span className="font-semibold text-base-content">
+                        {reviews.length}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-base-content/70">Most Common Rating</span>
+                      <span className="text-base-content/70">
+                        Most Common Rating
+                      </span>
                       <span className="font-semibold text-base-content">
                         {ratingDistribution[0].stars} ⭐
                       </span>
@@ -325,7 +371,8 @@ const MyRatings = () => {
                           alt={review.propertyName}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
-                            e.target.src = "https://placehold.co/500x400?text=Property";
+                            e.target.src =
+                              "https://placehold.co/500x400?text=Property";
                           }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -352,7 +399,9 @@ const MyRatings = () => {
                                 <FaStar
                                   key={i}
                                   className={`text-lg ${
-                                    i < review.rating ? "text-warning" : "text-base-300"
+                                    i < review.rating
+                                      ? "text-warning"
+                                      : "text-base-300"
                                   }`}
                                 />
                               ))}
@@ -361,7 +410,11 @@ const MyRatings = () => {
                               </span>
                             </div>
                             <span className="badge badge-primary badge-sm">
-                              {review.rating >= 4 ? "Positive" : review.rating >= 3 ? "Neutral" : "Critical"}
+                              {review.rating >= 4
+                                ? "Positive"
+                                : review.rating >= 3
+                                ? "Neutral"
+                                : "Critical"}
                             </span>
                           </div>
                           <FaQuoteLeft className="text-xl text-primary/20 mb-2" />
@@ -374,7 +427,8 @@ const MyRatings = () => {
                         <div className="flex flex-col sm:flex-row justify-between pt-4 mt-4 border-t border-base-200 gap-3">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-content font-medium">
-                              {review.reviewerName?.charAt(0).toUpperCase() || "U"}
+                              {review.reviewerName?.charAt(0).toUpperCase() ||
+                                "U"}
                             </div>
                             <div>
                               <p className="font-medium text-base-content">
@@ -382,11 +436,14 @@ const MyRatings = () => {
                               </p>
                               <p className="text-xs text-base-content/60 flex items-center gap-1">
                                 <FaCalendar className="text-[10px]" />
-                                {new Date(review.dateAdded).toLocaleDateString("en-US", {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                })}
+                                {new Date(review.dateAdded).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                  }
+                                )}
                               </p>
                             </div>
                           </div>
@@ -410,7 +467,9 @@ const MyRatings = () => {
               {filteredReviews.length === 0 && reviews.length > 0 && (
                 <div className="text-center py-12 bg-base-100 rounded-xl border border-base-200">
                   <FaComments className="text-4xl text-base-content/30 mx-auto mb-3" />
-                  <p className="text-base-content/70">No reviews match your filters</p>
+                  <p className="text-base-content/70">
+                    No reviews match your filters
+                  </p>
                   <button
                     onClick={() => {
                       setFilterRating("all");

@@ -108,7 +108,7 @@
 
 //     try {
 //       // ✅ FIXED: Removed extra spaces in URL
-//       const res = await axios.post("http://localhost:3000/addService", payload);
+//       const res = await axios.post("https://home-nest-server-10.vercel.app/addService", payload);
 //       if (res.data.insertedId) {
 //         toast.success("Property added successfully!");
 //         setTimeout(() => navigate("/my-properties"), 1200);
@@ -391,7 +391,6 @@
 
 // export default AddProperty;
 
-
 // src/Pages/AddProperty.jsx
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -504,7 +503,10 @@ const AddProperty = () => {
     };
 
     try {
-      const res = await axios.post("http://localhost:3000/addService", payload);
+      const res = await axios.post(
+        "https://home-nest-server-10.vercel.app/addService",
+        payload
+      );
       if (res.data.insertedId) {
         toast.success("Property added successfully!");
         setTimeout(() => navigate("/my-properties"), 1200);
@@ -730,7 +732,9 @@ const AddProperty = () => {
                   type="text"
                   value={newAmenity}
                   onChange={(e) => setNewAmenity(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addAmenity())}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addAmenity())
+                  }
                   className="input input-bordered flex-1"
                   placeholder="Add amenity (e.g., AC, Gym, Balcony)"
                 />

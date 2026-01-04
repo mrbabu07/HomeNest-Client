@@ -191,7 +191,6 @@ import {
   FaSave,
   FaTimes,
   FaCamera,
-  
   FaStar,
   FaHeart,
   FaEye,
@@ -252,13 +251,13 @@ const Profile = () => {
 
       // Fetch user's properties
       const propertiesResponse = await axios.get(
-        `http://localhost:3000/myServices?email=${user.email}`
+        `https://home-nest-server-10.vercel.app/myServices?email=${user.email}`
       );
       const userProperties = propertiesResponse.data || [];
 
       // Fetch user's reviews
       const reviewsResponse = await axios.get(
-        `http://localhost:3000/reviewsByUser/${user.email}`
+        `https://home-nest-server-10.vercel.app/reviewsByUser/${user.email}`
       );
       const userReviews = reviewsResponse.data || [];
 
@@ -267,10 +266,14 @@ const Profile = () => {
       const totalReviews = userReviews.length;
 
       // Calculate average rating
-      const propertiesWithRating = userProperties.filter(p => p.rating && p.rating > 0);
-      const averageRating = propertiesWithRating.length > 0
-        ? (propertiesWithRating.reduce((sum, p) => sum + p.rating, 0) / propertiesWithRating.length)
-        : 0;
+      const propertiesWithRating = userProperties.filter(
+        (p) => p.rating && p.rating > 0
+      );
+      const averageRating =
+        propertiesWithRating.length > 0
+          ? propertiesWithRating.reduce((sum, p) => sum + p.rating, 0) /
+            propertiesWithRating.length
+          : 0;
 
       // Simulate views and favorites
       const totalViews = userProperties.reduce(
@@ -301,14 +304,14 @@ const Profile = () => {
   const fetchRecentActivity = async () => {
     try {
       const propertiesResponse = await axios.get(
-        `http://localhost:3000/myServices?email=${user.email}`
+        `https://home-nest-server-10.vercel.app/myServices?email=${user.email}`
       );
       const userProperties = propertiesResponse.data || [];
 
       const activities = userProperties
         .sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate))
         .slice(0, 5)
-        .map(p => ({
+        .map((p) => ({
           id: p._id,
           type: "property",
           title: `Posted "${p.name}"`,
@@ -338,11 +341,11 @@ const Profile = () => {
       });
 
       // You can add backend API call here to save additional fields
-      // await axios.put(`http://localhost:3000/api/users/${user.email}`, profileData);
+      // await axios.put(`https://home-nest-server-10.vercel.app/api/users/${user.email}`, profileData);
 
       toast.success("Profile updated successfully!");
       setEditing(false);
-      
+
       // Update context
       if (setUser) {
         setUser({ ...user, ...profileData });
@@ -409,7 +412,10 @@ const Profile = () => {
           <div className="absolute -bottom-16 left-8">
             <div className="relative">
               <img
-                src={profileData.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+                src={
+                  profileData.photoURL ||
+                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                }
                 alt="Profile"
                 className="w-32 h-32 rounded-full border-4 border-base-100 object-cover shadow-xl"
               />
@@ -532,7 +538,9 @@ const Profile = () => {
                   {/* Display Name */}
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-semibold">Full Name</span>
+                      <span className="label-text font-semibold">
+                        Full Name
+                      </span>
                     </label>
                     {editing ? (
                       <input
@@ -734,7 +742,9 @@ const Profile = () => {
                     <div className="flex items-center gap-3 p-3 bg-success/10 rounded-lg">
                       <FaShieldAlt className="text-success text-2xl" />
                       <div>
-                        <p className="font-semibold text-success">Verified User</p>
+                        <p className="font-semibold text-success">
+                          Verified User
+                        </p>
                         <p className="text-xs text-base-content/60">
                           Trusted by community
                         </p>
@@ -745,7 +755,9 @@ const Profile = () => {
                     <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
                       <FaHouse className="text-primary text-2xl" />
                       <div>
-                        <p className="font-semibold text-primary">Active Lister</p>
+                        <p className="font-semibold text-primary">
+                          Active Lister
+                        </p>
                         <p className="text-xs text-base-content/60">
                           5+ properties listed
                         </p>
@@ -767,7 +779,9 @@ const Profile = () => {
                     <div className="flex items-center gap-3 p-3 bg-accent/10 rounded-lg">
                       <FaCrown className="text-accent text-2xl" />
                       <div>
-                        <p className="font-semibold text-accent">Elite Member</p>
+                        <p className="font-semibold text-accent">
+                          Elite Member
+                        </p>
                         <p className="text-xs text-base-content/60">
                           10+ properties
                         </p>

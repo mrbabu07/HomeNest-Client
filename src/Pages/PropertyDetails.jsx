@@ -29,7 +29,7 @@
 //     const fetchProperty = async () => {
 //       try {
 //         const response = await axios.get(
-//           `http://localhost:3000/singleService/${id}`
+//           `https://home-nest-server-10.vercel.app/singleService/${id}`
 //         );
 //         setProperty(response.data);
 //       } catch (error) {
@@ -66,7 +66,7 @@
 //       };
 
 //       const response = await axios.post(
-//         `http://localhost:3000/singleService/${id}/reviews`,
+//         `https://home-nest-server-10.vercel.app/singleService/${id}/reviews`,
 //         newReview
 //       );
 
@@ -358,7 +358,7 @@ const PropertyDetails = () => {
     const fetchProperty = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/singleService/${id}`
+          `https://home-nest-server-10.vercel.app/singleService/${id}`
         );
         setProperty(response.data);
       } catch (error) {
@@ -386,7 +386,7 @@ const PropertyDetails = () => {
     if (property?.category) {
       axios
         .get(
-          `http://localhost:3000/allServices?category=${property.category}&limit=4`
+          `https://home-nest-server-10.vercel.app/allServices?category=${property.category}&limit=4`
         )
         .then((res) => {
           const others = res.data.properties.filter((p) => p._id !== id);
@@ -401,7 +401,7 @@ const PropertyDetails = () => {
   // ✅ Send notification function
   const sendNotification = async (to, message, type = "info") => {
     try {
-      await axios.post("http://localhost:3000/api/notify", {
+      await axios.post("https://home-nest-server-10.vercel.app/api/notify", {
         to,
         message,
         type,
@@ -434,7 +434,7 @@ const PropertyDetails = () => {
       };
 
       const response = await axios.post(
-        `http://localhost:3000/singleService/${id}/reviews`,
+        `https://home-nest-server-10.vercel.app/singleService/${id}/reviews`,
         newReview
       );
 

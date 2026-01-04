@@ -29,7 +29,7 @@
 
 //       // Direct full URL (no baseUrl variable)
 //       const response = await axios.get(
-//         `http://localhost:3000/allServices?${params.toString()}`
+//         `https://home-nest-server-10.vercel.app/allServices?${params.toString()}`
 //       );
 
 //       setProperties(Array.isArray(response.data) ? response.data : []);
@@ -239,7 +239,7 @@ const AllProperties = () => {
       params.append("limit", itemsPerPage);
 
       const response = await axios.get(
-        `http://localhost:3000/allServices?${params.toString()}`
+        `https://home-nest-server-10.vercel.app/allServices?${params.toString()}`
       );
 
       // Handle paginated response

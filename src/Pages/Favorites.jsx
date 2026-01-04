@@ -27,21 +27,21 @@ const Favorites = () => {
   const [filteredFavorites, setFilteredFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // UI States
   const [viewMode, setViewMode] = useState("grid"); // grid | list
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest"); // newest, oldest, price_asc, price_desc, rating
   const [filterCategory, setFilterCategory] = useState("all");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-  
+
   // Statistics
   const [stats, setStats] = useState({
     total: 0,
     totalValue: 0,
     avgPrice: 0,
     avgRating: 0,
-    categories: {}
+    categories: {},
   });
 
   useEffect(() => {
@@ -59,8 +59,9 @@ const Favorites = () => {
   const fetchFavorites = async () => {
     try {
       setLoading(true);
-      const favIds = JSON.parse(localStorage.getItem("homenest_favorites")) || [];
-      
+      const favIds =
+        JSON.parse(localStorage.getItem("homenest_favorites")) || [];
+
       if (favIds.length === 0) {
         setFavorites([]);
         setFilteredFavorites([]);
@@ -68,24 +69,25 @@ const Favorites = () => {
         return;
       }
 
-      const promises = favIds.map(id => 
-        axios.get(`http://localhost:3000/singleService/${id}`)
-          .catch(err => {
+      const promises = favIds.map((id) =>
+        axios
+          .get(`https://home-nest-server-10.vercel.app/singleService/${id}`)
+          .catch((err) => {
             console.error(`Failed to fetch property ${id}:`, err);
             return null;
           })
       );
-      
+
       const responses = await Promise.all(promises);
       const validProperties = responses
-        .map(res => res?.data)
-        .filter(property => property);
-      
+        .map((res) => res?.data)
+        .filter((property) => property);
+
       setFavorites(validProperties);
-      
+
       // Clean up localStorage
-      const validIds = validProperties.map(p => p._id);
-      const cleanedIds = favIds.filter(id => validIds.includes(id));
+      const validIds = validProperties.map((p) => p._id);
+      const cleanedIds = favIds.filter((id) => validIds.includes(id));
       if (cleanedIds.length !== favIds.length) {
         localStorage.setItem("homenest_favorites", JSON.stringify(cleanedIds));
       }
@@ -100,15 +102,22 @@ const Favorites = () => {
 
   const calculateStats = () => {
     if (favorites.length === 0) {
-      setStats({ total: 0, totalValue: 0, avgPrice: 0, avgRating: 0, categories: {} });
+      setStats({
+        total: 0,
+        totalValue: 0,
+        avgPrice: 0,
+        avgRating: 0,
+        categories: {},
+      });
       return;
     }
 
     const total = favorites.length;
     const totalValue = favorites.reduce((sum, p) => sum + (p.price || 0), 0);
     const avgPrice = totalValue / total;
-    const avgRating = favorites.reduce((sum, p) => sum + (p.rating || 0), 0) / total;
-    
+    const avgRating =
+      favorites.reduce((sum, p) => sum + (p.rating || 0), 0) / total;
+
     const categories = favorites.reduce((acc, p) => {
       const cat = p.category || "other";
       acc[cat] = (acc[cat] || 0) + 1;
@@ -124,23 +133,24 @@ const Favorites = () => {
     // Search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.name?.toLowerCase().includes(term) ||
-        p.location?.toLowerCase().includes(term) ||
-        p.description?.toLowerCase().includes(term)
+      filtered = filtered.filter(
+        (p) =>
+          p.name?.toLowerCase().includes(term) ||
+          p.location?.toLowerCase().includes(term) ||
+          p.description?.toLowerCase().includes(term)
       );
     }
 
     // Category filter
     if (filterCategory !== "all") {
-      filtered = filtered.filter(p => 
-        p.category?.toLowerCase() === filterCategory.toLowerCase()
+      filtered = filtered.filter(
+        (p) => p.category?.toLowerCase() === filterCategory.toLowerCase()
       );
     }
 
     // Price range filter
     if (priceRange.min !== "" || priceRange.max !== "") {
-      filtered = filtered.filter(p => {
+      filtered = filtered.filter((p) => {
         const price = p.price || 0;
         const min = priceRange.min === "" ? 0 : Number(priceRange.min);
         const max = priceRange.max === "" ? Infinity : Number(priceRange.max);
@@ -163,10 +173,14 @@ const Favorites = () => {
         filtered.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
         break;
       case "oldest":
-        filtered.sort((a, b) => new Date(a.postedDate) - new Date(b.postedDate));
+        filtered.sort(
+          (a, b) => new Date(a.postedDate) - new Date(b.postedDate)
+        );
         break;
       default: // newest
-        filtered.sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate));
+        filtered.sort(
+          (a, b) => new Date(b.postedDate) - new Date(a.postedDate)
+        );
     }
 
     setFilteredFavorites(filtered);
@@ -174,15 +188,15 @@ const Favorites = () => {
 
   const removeFromFavorites = (id, propertyName) => {
     const favIds = JSON.parse(localStorage.getItem("homenest_favorites")) || [];
-    const updated = favIds.filter(favId => favId !== id);
+    const updated = favIds.filter((favId) => favId !== id);
     localStorage.setItem("homenest_favorites", JSON.stringify(updated));
-    setFavorites(prev => prev.filter(p => p._id !== id));
+    setFavorites((prev) => prev.filter((p) => p._id !== id));
     toast.success(`Removed "${propertyName}" from favorites`);
   };
 
   const clearAllFavorites = () => {
     if (favorites.length === 0) return;
-    
+
     if (window.confirm("Are you sure you want to remove all favorites?")) {
       localStorage.setItem("homenest_favorites", JSON.stringify([]));
       setFavorites([]);
@@ -196,20 +210,28 @@ const Favorites = () => {
       return;
     }
 
-    const headers = ["Name", "Category", "Price", "Location", "Rating", "Bedrooms", "Bathrooms"];
-    const csvData = filteredFavorites.map(p => [
+    const headers = [
+      "Name",
+      "Category",
+      "Price",
+      "Location",
+      "Rating",
+      "Bedrooms",
+      "Bathrooms",
+    ];
+    const csvData = filteredFavorites.map((p) => [
       p.name,
       p.category,
       p.price,
       p.location,
       p.rating?.toFixed(1) || "N/A",
       p.bedrooms || 0,
-      p.bathrooms || 0
+      p.bathrooms || 0,
     ]);
 
     const csvContent = [
       headers.join(","),
-      ...csvData.map(row => row.map(cell => `"${cell}"`).join(","))
+      ...csvData.map((row) => row.map((cell) => `"${cell}"`).join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -225,11 +247,13 @@ const Favorites = () => {
   const handleShare = () => {
     const text = `Check out my ${favorites.length} favorite properties on HomeNest!`;
     if (navigator.share) {
-      navigator.share({
-        title: "My Favorite Properties",
-        text: text,
-        url: window.location.href
-      }).catch(() => {});
+      navigator
+        .share({
+          title: "My Favorite Properties",
+          text: text,
+          url: window.location.href,
+        })
+        .catch(() => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast.success("Link copied to clipboard!");
@@ -251,7 +275,9 @@ const Favorites = () => {
           <div className="w-20 h-20 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <FaHeart className="text-4xl text-error" />
           </div>
-          <h3 className="text-2xl font-bold text-base-content mb-2">Login Required</h3>
+          <h3 className="text-2xl font-bold text-base-content mb-2">
+            Login Required
+          </h3>
           <p className="text-base-content/70 mb-6">
             Please log in to view and manage your favorite properties
           </p>
@@ -274,31 +300,32 @@ const Favorites = () => {
                 <FaHeart className="text-error" /> My Favorites
               </h1>
               <p className="text-base-content/70 mt-2">
-                {filteredFavorites.length > 0 
-                  ? `Showing ${filteredFavorites.length} of ${favorites.length} ${favorites.length === 1 ? 'property' : 'properties'}`
-                  : "Your saved properties for later"
-                }
+                {filteredFavorites.length > 0
+                  ? `Showing ${filteredFavorites.length} of ${
+                      favorites.length
+                    } ${favorites.length === 1 ? "property" : "properties"}`
+                  : "Your saved properties for later"}
               </p>
             </div>
-            
+
             {/* Action Buttons */}
             {favorites.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                <button 
+                <button
                   onClick={handleShare}
                   className="btn btn-outline btn-sm gap-2"
                   title="Share favorites"
                 >
                   <FaShare /> Share
                 </button>
-                <button 
+                <button
                   onClick={handleExportData}
                   className="btn btn-outline btn-sm gap-2"
                   title="Export to CSV"
                 >
                   <FaDownload /> Export
                 </button>
-                <button 
+                <button
                   onClick={clearAllFavorites}
                   className="btn btn-outline btn-error btn-sm gap-2"
                 >
@@ -315,17 +342,21 @@ const Favorites = () => {
                 <div className="text-sm opacity-90 mb-1">Total Favorites</div>
                 <div className="text-3xl font-bold">{stats.total}</div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-secondary to-secondary/80 text-secondary-content p-5 rounded-xl shadow-lg">
                 <div className="text-sm opacity-90 mb-1">Total Value</div>
-                <div className="text-3xl font-bold">${(stats.totalValue / 1000000).toFixed(1)}M</div>
+                <div className="text-3xl font-bold">
+                  ${(stats.totalValue / 1000000).toFixed(1)}M
+                </div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-accent to-accent/80 text-accent-content p-5 rounded-xl shadow-lg">
                 <div className="text-sm opacity-90 mb-1">Avg. Price</div>
-                <div className="text-3xl font-bold">${(stats.avgPrice / 1000).toFixed(0)}K</div>
+                <div className="text-3xl font-bold">
+                  ${(stats.avgPrice / 1000).toFixed(0)}K
+                </div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-warning to-warning/80 text-warning-content p-5 rounded-xl shadow-lg">
                 <div className="text-sm opacity-90 mb-1">Avg. Rating</div>
                 <div className="text-3xl font-bold flex items-center gap-2">
@@ -360,9 +391,10 @@ const Favorites = () => {
                   className="select select-bordered w-full lg:w-48"
                 >
                   <option value="all">All Categories</option>
-                  {Object.keys(stats.categories).map(cat => (
+                  {Object.keys(stats.categories).map((cat) => (
                     <option key={cat} value={cat}>
-                      {cat.charAt(0).toUpperCase() + cat.slice(1)} ({stats.categories[cat]})
+                      {cat.charAt(0).toUpperCase() + cat.slice(1)} (
+                      {stats.categories[cat]})
                     </option>
                   ))}
                 </select>
@@ -411,7 +443,12 @@ const Favorites = () => {
                       type="number"
                       placeholder="$0"
                       value={priceRange.min}
-                      onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))} // Fixed typo: min: prev.min → min: e.target.value
+                      onChange={(e) =>
+                        setPriceRange((prev) => ({
+                          ...prev,
+                          min: e.target.value,
+                        }))
+                      } // Fixed typo: min: prev.min → min: e.target.value
                       className="input input-bordered"
                     />
                   </div>
@@ -423,39 +460,59 @@ const Favorites = () => {
                       type="number"
                       placeholder="Any"
                       value={priceRange.max}
-                      onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                      onChange={(e) =>
+                        setPriceRange((prev) => ({
+                          ...prev,
+                          max: e.target.value,
+                        }))
+                      }
                       className="input input-bordered"
                     />
                   </div>
                 </div>
-                <button
-                  onClick={resetFilters}
-                  className="btn btn-ghost btn-sm"
-                >
+                <button onClick={resetFilters} className="btn btn-ghost btn-sm">
                   Reset Filters
                 </button>
               </div>
 
               {/* Active Filters Info */}
-              {(searchTerm || filterCategory !== "all" || priceRange.min || priceRange.max) && (
+              {(searchTerm ||
+                filterCategory !== "all" ||
+                priceRange.min ||
+                priceRange.max) && (
                 <div className="flex flex-wrap gap-2 items-center text-sm">
                   <span className="font-semibold">Active Filters:</span>
                   {searchTerm && (
                     <span className="badge badge-primary gap-1">
                       Search: {searchTerm}
-                      <button onClick={() => setSearchTerm("")} className="ml-1">×</button>
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="ml-1"
+                      >
+                        ×
+                      </button>
                     </span>
                   )}
                   {filterCategory !== "all" && (
                     <span className="badge badge-secondary gap-1">
                       Category: {filterCategory}
-                      <button onClick={() => setFilterCategory("all")} className="ml-1">×</button>
+                      <button
+                        onClick={() => setFilterCategory("all")}
+                        className="ml-1"
+                      >
+                        ×
+                      </button>
                     </span>
                   )}
                   {(priceRange.min || priceRange.max) && (
                     <span className="badge badge-accent gap-1">
                       Price: ${priceRange.min || 0} - ${priceRange.max || "∞"}
-                      <button onClick={() => setPriceRange({ min: "", max: "" })} className="ml-1">×</button>
+                      <button
+                        onClick={() => setPriceRange({ min: "", max: "" })}
+                        className="ml-1"
+                      >
+                        ×
+                      </button>
                     </span>
                   )}
                 </div>
@@ -468,17 +525,16 @@ const Favorites = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <FaSpinner className="animate-spin text-6xl text-primary mb-4" />
-            <p className="text-base-content/70 text-lg">Loading your favorites...</p>
+            <p className="text-base-content/70 text-lg">
+              Loading your favorites...
+            </p>
           </div>
         ) : error ? (
           <div className="text-center py-16 bg-error/10 rounded-xl border border-error/20 max-w-2xl mx-auto">
             <div className="text-6xl mb-4">⚠️</div>
             <h3 className="text-2xl font-semibold text-error mb-2">Error</h3>
             <p className="text-base-content/70 mb-6">{error}</p>
-            <button 
-              onClick={fetchFavorites}
-              className="btn btn-primary"
-            >
+            <button onClick={fetchFavorites} className="btn btn-primary">
               Try Again
             </button>
           </div>
@@ -491,7 +547,8 @@ const Favorites = () => {
               No Favorites Yet
             </h3>
             <p className="text-base-content/70 mb-8 max-w-md mx-auto text-lg">
-              Start exploring and save properties you love by clicking the heart icon!
+              Start exploring and save properties you love by clicking the heart
+              icon!
             </p>
             <Link to="/properties" className="btn btn-primary btn-lg gap-2">
               <FaMapMarkerAlt /> Browse Properties
@@ -561,7 +618,8 @@ const FavoritePropertyCard = ({ property, onRemove }) => {
     area,
   } = property;
 
-  const displayImage = imageURLs?.[0] || imageURL || "https://placehold.co/400x300?text=Property";
+  const displayImage =
+    imageURLs?.[0] || imageURL || "https://placehold.co/400x300?text=Property";
   const formattedPrice = new Intl.NumberFormat("en-US").format(price);
 
   const getCategoryColor = (cat) => {
@@ -588,7 +646,7 @@ const FavoritePropertyCard = ({ property, onRemove }) => {
             }}
           />
         </Link>
-        
+
         <button
           onClick={() => onRemove(_id, name)}
           className="absolute top-3 right-3 z-10 w-10 h-10 bg-base-100/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all duration-200 hover:bg-error group/btn"
@@ -598,7 +656,11 @@ const FavoritePropertyCard = ({ property, onRemove }) => {
         </button>
 
         <div className="absolute top-3 left-3 z-10">
-          <span className={`badge ${getCategoryColor(category)} badge-lg font-semibold`}>
+          <span
+            className={`badge ${getCategoryColor(
+              category
+            )} badge-lg font-semibold`}
+          >
             {category}
           </span>
         </div>
@@ -701,7 +763,8 @@ const FavoritePropertyListItem = ({ property, onRemove }) => {
     area,
   } = property;
 
-  const displayImage = imageURLs?.[0] || imageURL || "https://placehold.co/400x300?text=Property";
+  const displayImage =
+    imageURLs?.[0] || imageURL || "https://placehold.co/400x300?text=Property";
   const formattedPrice = new Intl.NumberFormat("en-US").format(price);
 
   return (

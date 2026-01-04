@@ -38,7 +38,7 @@ import { TrendingUp, TrendingDown, Activity } from "lucide-react";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
-  
+
   // State management
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
@@ -69,20 +69,24 @@ const Dashboard = () => {
 
       // Fetch user's properties
       const propertiesRes = await axios.get(
-        `http://localhost:3000/myServices?email=${user.email}`
+        `https://home-nest-server-10.vercel.app/myServices?email=${user.email}`
       );
-      const properties = Array.isArray(propertiesRes.data) ? propertiesRes.data : [];
+      const properties = Array.isArray(propertiesRes.data)
+        ? propertiesRes.data
+        : [];
       setMyProperties(properties);
 
       // Fetch user's reviews
       const reviewsRes = await axios.get(
-        `http://localhost:3000/reviewsByUser/${user.email}`
+        `https://home-nest-server-10.vercel.app/reviewsByUser/${user.email}`
       );
       const reviews = Array.isArray(reviewsRes.data) ? reviewsRes.data : [];
       setMyReviews(reviews);
 
       // Fetch global stats
-      const statsRes = await axios.get("http://localhost:3000/api/stats");
+      const statsRes = await axios.get(
+        "https://home-nest-server-10.vercel.app/api/stats"
+      );
       setGlobalStats(statsRes.data || globalStats);
 
       setStatsLoading(false);
@@ -99,10 +103,17 @@ const Dashboard = () => {
   const userStats = {
     totalListings: myProperties.length,
     totalViews: myProperties.reduce((sum, p) => sum + (p.views || 0), 0),
-    totalReviews: myProperties.reduce((sum, p) => sum + (p.reviews?.length || 0), 0),
-    avgRating: myProperties.length > 0
-      ? (myProperties.reduce((sum, p) => sum + (p.rating || 0), 0) / myProperties.length).toFixed(1)
-      : 0,
+    totalReviews: myProperties.reduce(
+      (sum, p) => sum + (p.reviews?.length || 0),
+      0
+    ),
+    avgRating:
+      myProperties.length > 0
+        ? (
+            myProperties.reduce((sum, p) => sum + (p.rating || 0), 0) /
+            myProperties.length
+          ).toFixed(1)
+        : 0,
     totalValue: myProperties.reduce((sum, p) => sum + (p.price || 0), 0),
   };
 
@@ -122,11 +133,11 @@ const Dashboard = () => {
   const monthlyData = (() => {
     const months = [];
     const now = new Date();
-    
+
     for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthName = date.toLocaleDateString("en-US", { month: "short" });
-      
+
       const count = myProperties.filter((p) => {
         const propDate = new Date(p.postedDate);
         return (
@@ -137,7 +148,7 @@ const Dashboard = () => {
 
       months.push({ month: monthName, properties: count });
     }
-    
+
     return months;
   })();
 
@@ -149,11 +160,13 @@ const Dashboard = () => {
     },
     {
       range: "50k-100k",
-      count: myProperties.filter((p) => p.price >= 50000 && p.price < 100000).length,
+      count: myProperties.filter((p) => p.price >= 50000 && p.price < 100000)
+        .length,
     },
     {
       range: "100k-200k",
-      count: myProperties.filter((p) => p.price >= 100000 && p.price < 200000).length,
+      count: myProperties.filter((p) => p.price >= 100000 && p.price < 200000)
+        .length,
     },
     {
       range: "200k+",
@@ -206,7 +219,9 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-            <div className="text-3xl font-bold mb-1">{userStats.totalListings}</div>
+            <div className="text-3xl font-bold mb-1">
+              {userStats.totalListings}
+            </div>
             <div className="text-sm opacity-90">Total Listings</div>
           </div>
 
@@ -246,7 +261,9 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-            <div className="text-3xl font-bold mb-1">{userStats.totalReviews}</div>
+            <div className="text-3xl font-bold mb-1">
+              {userStats.totalReviews}
+            </div>
             <div className="text-sm opacity-90">Total Reviews</div>
           </div>
 
@@ -286,7 +303,13 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={monthlyData}>
                 <defs>
-                  <linearGradient id="colorProperties" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient
+                    id="colorProperties"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                   </linearGradient>
@@ -389,7 +412,9 @@ const Dashboard = () => {
               <h3 className="text-xl font-bold text-base-content">
                 Quick Actions
               </h3>
-              <p className="text-sm text-base-content/70">Manage your account</p>
+              <p className="text-sm text-base-content/70">
+                Manage your account
+              </p>
             </div>
             <div className="space-y-3">
               <Link
@@ -420,19 +445,25 @@ const Dashboard = () => {
 
             {/* Global Stats */}
             <div className="mt-6 pt-6 border-t border-base-200">
-              <h4 className="font-semibold text-base-content mb-3">Platform Stats</h4>
+              <h4 className="font-semibold text-base-content mb-3">
+                Platform Stats
+              </h4>
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-base-200 p-3 rounded-lg">
                   <div className="text-2xl font-bold text-primary">
                     {globalStats.totalProperties}
                   </div>
-                  <div className="text-xs text-base-content/70">Total Properties</div>
+                  <div className="text-xs text-base-content/70">
+                    Total Properties
+                  </div>
                 </div>
                 <div className="bg-base-200 p-3 rounded-lg">
                   <div className="text-2xl font-bold text-success">
                     {globalStats.totalReviews}
                   </div>
-                  <div className="text-xs text-base-content/70">Total Reviews</div>
+                  <div className="text-xs text-base-content/70">
+                    Total Reviews
+                  </div>
                 </div>
               </div>
             </div>
@@ -494,7 +525,8 @@ const Dashboard = () => {
                               alt={property.name}
                               className="w-16 h-16 object-cover rounded-lg"
                               onError={(e) =>
-                                (e.target.src = "https://placehold.co/100?text=Property")
+                                (e.target.src =
+                                  "https://placehold.co/100?text=Property")
                               }
                             />
                             <div>
@@ -503,7 +535,9 @@ const Dashboard = () => {
                               </div>
                               <div className="text-xs text-base-content/70 flex items-center gap-1 mt-1">
                                 <FaCalendar />
-                                {new Date(property.postedDate).toLocaleDateString()}
+                                {new Date(
+                                  property.postedDate
+                                ).toLocaleDateString()}
                               </div>
                             </div>
                           </div>
@@ -573,7 +607,8 @@ const Dashboard = () => {
                         alt={property.name}
                         className="w-20 h-20 object-cover rounded-lg"
                         onError={(e) =>
-                          (e.target.src = "https://placehold.co/100?text=Property")
+                          (e.target.src =
+                            "https://placehold.co/100?text=Property")
                         }
                       />
                       <div className="flex-1 min-w-0">
@@ -589,7 +624,9 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-center justify-between mb-3">
-                      <span className="badge badge-primary">{property.category}</span>
+                      <span className="badge badge-primary">
+                        {property.category}
+                      </span>
                       <div className="flex items-center gap-1">
                         <FaStar className="text-warning" />
                         <span className="font-semibold">
@@ -646,7 +683,8 @@ const Dashboard = () => {
                           alt={property.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           onError={(e) =>
-                            (e.target.src = "https://placehold.co/400x300?text=Property")
+                            (e.target.src =
+                              "https://placehold.co/400x300?text=Property")
                           }
                         />
                         <div className="absolute top-2 right-2 bg-warning text-warning-content px-2 py-1 rounded-lg flex items-center gap-1 text-sm font-semibold">

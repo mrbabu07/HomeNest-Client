@@ -17,7 +17,7 @@
 //     setLoading(true);
 
 //     axios
-//       .get("http://localhost:3000/myServices", {
+//       .get("https://home-nest-server-10.vercel.app/myServices", {
 //         params: { email: user.email },
 //       })
 //       .then((res) => {
@@ -46,7 +46,7 @@
 
 //     try {
 //       await axios.delete(
-//         `http://localhost:3000/deleteService/${id}`
+//         `https://home-nest-server-10.vercel.app/deleteService/${id}`
 //       );
 
 //       setProperties((prev) => prev.filter((p) => p._id !== id));
@@ -291,7 +291,7 @@ const MyProperties = () => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // UI States
   const [viewMode, setViewMode] = useState("table"); // table | grid | list
   const [searchTerm, setSearchTerm] = useState("");
@@ -309,7 +309,7 @@ const MyProperties = () => {
 
     setLoading(true);
     axios
-      .get("http://localhost:3000/myServices", {
+      .get("https://home-nest-server-10.vercel.app/myServices", {
         params: { email: user.email },
       })
       .then((res) => {
@@ -336,17 +336,18 @@ const MyProperties = () => {
     // Search
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(p =>
-        p.name?.toLowerCase().includes(term) ||
-        p.location?.toLowerCase().includes(term) ||
-        p.category?.toLowerCase().includes(term)
+      filtered = filtered.filter(
+        (p) =>
+          p.name?.toLowerCase().includes(term) ||
+          p.location?.toLowerCase().includes(term) ||
+          p.category?.toLowerCase().includes(term)
       );
     }
 
     // Category filter
     if (filterCategory !== "all") {
-      filtered = filtered.filter(p =>
-        p.category?.toLowerCase() === filterCategory.toLowerCase()
+      filtered = filtered.filter(
+        (p) => p.category?.toLowerCase() === filterCategory.toLowerCase()
       );
     }
 
@@ -365,10 +366,14 @@ const MyProperties = () => {
         filtered.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
         break;
       case "oldest":
-        filtered.sort((a, b) => new Date(a.postedDate) - new Date(b.postedDate));
+        filtered.sort(
+          (a, b) => new Date(a.postedDate) - new Date(b.postedDate)
+        );
         break;
       default: // newest
-        filtered.sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate));
+        filtered.sort(
+          (a, b) => new Date(b.postedDate) - new Date(a.postedDate)
+        );
     }
 
     setFilteredProperties(filtered);
@@ -389,7 +394,9 @@ const MyProperties = () => {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:3000/deleteService/${id}`);
+      await axios.delete(
+        `https://home-nest-server-10.vercel.app/deleteService/${id}`
+      );
       setProperties((prev) => prev.filter((p) => p._id !== id));
       toast.success("Property deleted successfully!");
 
@@ -430,11 +437,15 @@ const MyProperties = () => {
 
     try {
       await Promise.all(
-        selectedProperties.map(id =>
-          axios.delete(`http://localhost:3000/deleteService/${id}`)
+        selectedProperties.map((id) =>
+          axios.delete(
+            `https://home-nest-server-10.vercel.app/deleteService/${id}`
+          )
         )
       );
-      setProperties(prev => prev.filter(p => !selectedProperties.includes(p._id)));
+      setProperties((prev) =>
+        prev.filter((p) => !selectedProperties.includes(p._id))
+      );
       setSelectedProperties([]);
       toast.success(`${selectedProperties.length} properties deleted`);
     } catch (error) {
@@ -449,10 +460,19 @@ const MyProperties = () => {
     }
 
     const headers = [
-      "Name", "Category", "Price", "Location", "Owner", "Bedrooms", 
-      "Bathrooms", "Area", "Rating", "Reviews", "Posted Date"
+      "Name",
+      "Category",
+      "Price",
+      "Location",
+      "Owner",
+      "Bedrooms",
+      "Bathrooms",
+      "Area",
+      "Rating",
+      "Reviews",
+      "Posted Date",
     ];
-    
+
     const csvData = filteredProperties.map((p) => [
       p.name,
       p.category,
@@ -490,33 +510,48 @@ const MyProperties = () => {
     if (selectedProperties.length === filteredProperties.length) {
       setSelectedProperties([]);
     } else {
-      setSelectedProperties(filteredProperties.map(p => p._id));
+      setSelectedProperties(filteredProperties.map((p) => p._id));
     }
   };
 
   const toggleSelectProperty = (id) => {
-    setSelectedProperties(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    setSelectedProperties((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
   // Calculate statistics
   const stats = {
     total: properties.length,
-    forRent: properties.filter((p) => p.category?.toLowerCase() === "rent").length,
-    forSale: properties.filter((p) => p.category?.toLowerCase() === "sale").length,
-    commercial: properties.filter((p) => p.category?.toLowerCase() === "commercial").length,
+    forRent: properties.filter((p) => p.category?.toLowerCase() === "rent")
+      .length,
+    forSale: properties.filter((p) => p.category?.toLowerCase() === "sale")
+      .length,
+    commercial: properties.filter(
+      (p) => p.category?.toLowerCase() === "commercial"
+    ).length,
     totalValue: properties.reduce((sum, p) => sum + (p.price || 0), 0),
-    totalReviews: properties.reduce((sum, p) => sum + (p.reviews?.length || 0), 0),
-    avgRating: properties.length > 0
-      ? (properties.reduce((sum, p) => sum + (p.rating || 0), 0) / properties.length).toFixed(1)
-      : 0,
-    avgPrice: properties.length > 0
-      ? properties.reduce((sum, p) => sum + (p.price || 0), 0) / properties.length
-      : 0,
+    totalReviews: properties.reduce(
+      (sum, p) => sum + (p.reviews?.length || 0),
+      0
+    ),
+    avgRating:
+      properties.length > 0
+        ? (
+            properties.reduce((sum, p) => sum + (p.rating || 0), 0) /
+            properties.length
+          ).toFixed(1)
+        : 0,
+    avgPrice:
+      properties.length > 0
+        ? properties.reduce((sum, p) => sum + (p.price || 0), 0) /
+          properties.length
+        : 0,
   };
 
-  const categories = [...new Set(properties.map(p => p.category).filter(Boolean))];
+  const categories = [
+    ...new Set(properties.map((p) => p.category).filter(Boolean)),
+  ];
 
   if (!user) {
     return (
@@ -543,7 +578,9 @@ const MyProperties = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-base-100">
         <FaSpinner className="animate-spin text-6xl text-primary mb-4" />
-        <p className="text-base-content/70 text-lg">Loading your properties...</p>
+        <p className="text-base-content/70 text-lg">
+          Loading your properties...
+        </p>
       </div>
     );
   }
@@ -560,9 +597,10 @@ const MyProperties = () => {
               </h1>
               <p className="text-base-content/70 mt-2">
                 {filteredProperties.length > 0
-                  ? `Showing ${filteredProperties.length} of ${properties.length} ${properties.length === 1 ? 'property' : 'properties'}`
-                  : "Manage all your listed properties"
-                }
+                  ? `Showing ${filteredProperties.length} of ${
+                      properties.length
+                    } ${properties.length === 1 ? "property" : "properties"}`
+                  : "Manage all your listed properties"}
               </p>
             </div>
 
@@ -573,10 +611,16 @@ const MyProperties = () => {
               </Link>
               {properties.length > 0 && (
                 <>
-                  <button onClick={handleExportCSV} className="btn btn-outline gap-2">
+                  <button
+                    onClick={handleExportCSV}
+                    className="btn btn-outline gap-2"
+                  >
                     <FaDownload /> Export
                   </button>
-                  <button onClick={handlePrint} className="btn btn-outline gap-2">
+                  <button
+                    onClick={handlePrint}
+                    className="btn btn-outline gap-2"
+                  >
                     <FaPrint /> Print
                   </button>
                 </>
@@ -630,7 +674,9 @@ const MyProperties = () => {
                   <FaChartLine className="text-3xl opacity-30" />
                 </div>
                 <div className="text-4xl font-bold">
-                  {stats.total > 0 ? Math.round((stats.totalReviews / stats.total) * 10) / 10 : 0}
+                  {stats.total > 0
+                    ? Math.round((stats.totalReviews / stats.total) * 10) / 10
+                    : 0}
                 </div>
                 <div className="text-xs opacity-75 mt-2">
                   Reviews per property
@@ -664,8 +710,10 @@ const MyProperties = () => {
                   className="select select-bordered w-full lg:w-48"
                 >
                   <option value="all">All Categories</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
                   ))}
                 </select>
 
@@ -686,7 +734,9 @@ const MyProperties = () => {
                 {/* View Mode */}
                 <div className="btn-group">
                   <button
-                    className={`btn ${viewMode === "table" ? "btn-active" : ""}`}
+                    className={`btn ${
+                      viewMode === "table" ? "btn-active" : ""
+                    }`}
                     onClick={() => setViewMode("table")}
                     title="Table view"
                   >
@@ -770,7 +820,10 @@ const MyProperties = () => {
                       <input
                         type="checkbox"
                         className="checkbox checkbox-sm"
-                        checked={selectedProperties.length === filteredProperties.length}
+                        checked={
+                          selectedProperties.length ===
+                          filteredProperties.length
+                        }
                         onChange={toggleSelectAll}
                       />
                     </th>
@@ -796,11 +849,17 @@ const MyProperties = () => {
                       </td>
                       <td className="p-4">
                         <img
-                          src={p.imageURL || "https://placehold.co/150?text=Property  "}
+                          src={
+                            p.imageURL ||
+                            "https://placehold.co/150?text=Property  "
+                          }
                           alt={p.name}
                           loading="lazy"
                           className="h-16 w-24 object-cover rounded-lg shadow"
-                          onError={(e) => e.target.src = "https://placehold.co/150?text=Property  "}
+                          onError={(e) =>
+                            (e.target.src =
+                              "https://placehold.co/150?text=Property  ")
+                          }
                         />
                       </td>
                       <td className="p-4">
@@ -808,15 +867,19 @@ const MyProperties = () => {
                           {p.name}
                         </div>
                         <div className="flex gap-2 mt-1">
-                          <span className="badge badge-primary badge-sm">{p.category}</span>
+                          <span className="badge badge-primary badge-sm">
+                            {p.category}
+                          </span>
                           {p.bedrooms > 0 && (
                             <span className="text-xs text-base-content/70">
-                              <FaBed className="inline mr-1" />{p.bedrooms}
+                              <FaBed className="inline mr-1" />
+                              {p.bedrooms}
                             </span>
                           )}
                           {p.bathrooms > 0 && (
                             <span className="text-xs text-base-content/70">
-                              <FaBath className="inline mr-1" />{p.bathrooms}
+                              <FaBath className="inline mr-1" />
+                              {p.bathrooms}
                             </span>
                           )}
                         </div>
@@ -826,7 +889,9 @@ const MyProperties = () => {
                         {p.location}
                       </td>
                       <td className="p-4">
-                        <div className="font-bold text-lg">${p.price?.toLocaleString()}</div>
+                        <div className="font-bold text-lg">
+                          ${p.price?.toLocaleString()}
+                        </div>
                         <div className="text-xs text-base-content/60">
                           {p.category?.toLowerCase() === "rent" ? "/month" : ""}
                         </div>
@@ -834,11 +899,15 @@ const MyProperties = () => {
                       <td className="p-4 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <FaStar className="text-warning" />
-                          <span className="font-semibold">{p.rating?.toFixed(1) || "0.0"}</span>
+                          <span className="font-semibold">
+                            {p.rating?.toFixed(1) || "0.0"}
+                          </span>
                         </div>
                       </td>
                       <td className="p-4 text-center">
-                        <span className="badge badge-ghost">{p.reviews?.length || 0}</span>
+                        <span className="badge badge-ghost">
+                          {p.reviews?.length || 0}
+                        </span>
                       </td>
                       <td className="p-4">
                         <div className="flex justify-center gap-2">
@@ -883,33 +952,57 @@ const MyProperties = () => {
                       onChange={() => toggleSelectProperty(p._id)}
                     />
                     <img
-                      src={p.imageURL || "https://placehold.co/150?text=Property  "}
+                      src={
+                        p.imageURL || "https://placehold.co/150?text=Property  "
+                      }
                       alt={p.name}
                       loading="lazy"
                       className="h-24 w-32 object-cover rounded-lg flex-shrink-0"
-                      onError={(e) => e.target.src = "https://placehold.co/150?text=Property  "}
+                      onError={(e) =>
+                        (e.target.src =
+                          "https://placehold.co/150?text=Property  ")
+                      }
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-base-content mb-1 truncate">{p.name}</h3>
-                      <p className="text-sm text-base-content/70 mb-1 truncate">{p.location}</p>
-                      <p className="font-bold text-lg">${p.price?.toLocaleString()}</p>
+                      <h3 className="font-semibold text-base-content mb-1 truncate">
+                        {p.name}
+                      </h3>
+                      <p className="text-sm text-base-content/70 mb-1 truncate">
+                        {p.location}
+                      </p>
+                      <p className="font-bold text-lg">
+                        ${p.price?.toLocaleString()}
+                      </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="badge badge-primary badge-sm">{p.category}</span>
+                        <span className="badge badge-primary badge-sm">
+                          {p.category}
+                        </span>
                         <div className="flex items-center gap-1">
                           <FaStar className="text-warning text-xs" />
-                          <span className="text-xs font-semibold">{p.rating?.toFixed(1) || "N/A"}</span>
+                          <span className="text-xs font-semibold">
+                            {p.rating?.toFixed(1) || "N/A"}
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2 mt-4">
-                    <Link to={`/property/${p._id}`} className="btn btn-sm btn-primary">
+                    <Link
+                      to={`/property/${p._id}`}
+                      className="btn btn-sm btn-primary"
+                    >
                       <FaEye className="mr-1" /> View
                     </Link>
-                    <Link to={`/update-property/${p._id}`} className="btn btn-sm btn-secondary">
+                    <Link
+                      to={`/update-property/${p._id}`}
+                      className="btn btn-sm btn-secondary"
+                    >
                       <FaEdit className="mr-1" /> Edit
                     </Link>
-                    <button onClick={() => handleDelete(p._id)} className="btn btn-sm btn-error">
+                    <button
+                      onClick={() => handleDelete(p._id)}
+                      className="btn btn-sm btn-error"
+                    >
                       <FaTrash className="mr-1" /> Delete
                     </button>
                   </div>
@@ -936,7 +1029,18 @@ const MyProperties = () => {
 };
 
 const PropertyCard = ({ property, onDelete, isSelected, onToggleSelect }) => {
-  const { _id, name, category, location, price, imageURL, rating, reviews, bedrooms, bathrooms } = property;
+  const {
+    _id,
+    name,
+    category,
+    location,
+    price,
+    imageURL,
+    rating,
+    reviews,
+    bedrooms,
+    bathrooms,
+  } = property;
 
   return (
     <div className="card bg-base-100 shadow-lg hover:shadow-2xl transition-all border border-base-200">
@@ -952,7 +1056,9 @@ const PropertyCard = ({ property, onDelete, isSelected, onToggleSelect }) => {
           alt={name}
           loading="lazy"
           className="w-full h-full object-cover"
-          onError={(e) => e.target.src = "https://placehold.co/400x300?text=Property"}
+          onError={(e) =>
+            (e.target.src = "https://placehold.co/400x300?text=Property")
+          }
         />
         <div className="absolute top-3 right-3">
           <span className="badge badge-primary">{category}</span>
@@ -973,10 +1079,16 @@ const PropertyCard = ({ property, onDelete, isSelected, onToggleSelect }) => {
         </div>
         <div className="flex gap-4 text-sm text-base-content/70 mt-2">
           {bedrooms > 0 && (
-            <span><FaBed className="inline mr-1" />{bedrooms}</span>
+            <span>
+              <FaBed className="inline mr-1" />
+              {bedrooms}
+            </span>
           )}
           {bathrooms > 0 && (
-            <span><FaBath className="inline mr-1" />{bathrooms}</span>
+            <span>
+              <FaBath className="inline mr-1" />
+              {bathrooms}
+            </span>
           )}
           <span>{reviews?.length || 0} reviews</span>
         </div>
@@ -984,10 +1096,16 @@ const PropertyCard = ({ property, onDelete, isSelected, onToggleSelect }) => {
           <Link to={`/property/${_id}`} className="btn btn-sm btn-primary">
             <FaEye /> View
           </Link>
-          <Link to={`/update-property/${_id}`} className="btn btn-sm btn-secondary">
+          <Link
+            to={`/update-property/${_id}`}
+            className="btn btn-sm btn-secondary"
+          >
             <FaEdit /> Edit
           </Link>
-          <button onClick={() => onDelete(_id)} className="btn btn-sm btn-error">
+          <button
+            onClick={() => onDelete(_id)}
+            className="btn btn-sm btn-error"
+          >
             <FaTrash /> Delete
           </button>
         </div>

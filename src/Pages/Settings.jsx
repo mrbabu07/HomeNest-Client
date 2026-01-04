@@ -23,10 +23,17 @@ import {
   FaKey,
   FaCog,
 } from "react-icons/fa";
-import { Shield, Bell, Palette, Trash2, Settings as SettingsIcon } from "lucide-react";
+import {
+  Shield,
+  Bell,
+  Palette,
+  Trash2,
+  Settings as SettingsIcon,
+} from "lucide-react";
 
 const Settings = () => {
-  const { user, updateUserPassword, updateUserEmail, deleteAccount } = useContext(AuthContext);
+  const { user, updateUserPassword, updateUserEmail, deleteAccount } =
+    useContext(AuthContext);
 
   // Active tab state
   const [activeTab, setActiveTab] = useState("security");
@@ -103,7 +110,11 @@ const Settings = () => {
     e.preventDefault();
 
     // Validation
-    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+    if (
+      !passwordData.currentPassword ||
+      !passwordData.newPassword ||
+      !passwordData.confirmPassword
+    ) {
       toast.error("All password fields are required");
       return;
     }
@@ -189,7 +200,9 @@ const Settings = () => {
         await updateUserEmail(newEmail);
       }
 
-      toast.success("Email changed successfully! Please verify your new email.");
+      toast.success(
+        "Email changed successfully! Please verify your new email."
+      );
       setNewEmail("");
       setEmailPassword("");
     } catch (error) {
@@ -280,12 +293,14 @@ const Settings = () => {
     try {
       // Delete user's properties
       const propertiesRes = await axios.get(
-        `http://localhost:3000/myServices?email=${user.email}`
+        `https://home-nest-server-10.vercel.app/myServices?email=${user.email}`
       );
       const properties = propertiesRes.data || [];
 
       for (const property of properties) {
-        await axios.delete(`http://localhost:3000/deleteService/${property._id}`);
+        await axios.delete(
+          `https://home-nest-server-10.vercel.app/deleteService/${property._id}`
+        );
       }
 
       // Delete Firebase account
@@ -324,7 +339,9 @@ const Settings = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-base-content">Settings</h1>
-              <p className="text-base-content/70">Manage your account preferences</p>
+              <p className="text-base-content/70">
+                Manage your account preferences
+              </p>
             </div>
           </div>
         </div>
@@ -377,7 +394,9 @@ const Settings = () => {
                     {/* Current Password */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-medium">Current Password</span>
+                        <span className="label-text font-medium">
+                          Current Password
+                        </span>
                       </label>
                       <div className="relative">
                         <input
@@ -394,7 +413,9 @@ const Settings = () => {
                         />
                         <button
                           type="button"
-                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          onClick={() =>
+                            setShowCurrentPassword(!showCurrentPassword)
+                          }
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content"
                         >
                           {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
@@ -405,7 +426,9 @@ const Settings = () => {
                     {/* New Password */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-medium">New Password</span>
+                        <span className="label-text font-medium">
+                          New Password
+                        </span>
                       </label>
                       <div className="relative">
                         <input
@@ -433,7 +456,9 @@ const Settings = () => {
                     {/* Confirm Password */}
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-medium">Confirm New Password</span>
+                        <span className="label-text font-medium">
+                          Confirm New Password
+                        </span>
                       </label>
                       <div className="relative">
                         <input
@@ -450,7 +475,9 @@ const Settings = () => {
                         />
                         <button
                           type="button"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content"
                         >
                           {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
@@ -484,7 +511,8 @@ const Settings = () => {
                         Change Email Address
                       </h2>
                       <p className="text-sm text-base-content/70">
-                        Current email: <span className="font-medium">{user?.email}</span>
+                        Current email:{" "}
+                        <span className="font-medium">{user?.email}</span>
                       </p>
                     </div>
                   </div>
@@ -492,7 +520,9 @@ const Settings = () => {
                   <form onSubmit={handleEmailChange} className="space-y-4">
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-medium">New Email Address</span>
+                        <span className="label-text font-medium">
+                          New Email Address
+                        </span>
                       </label>
                       <input
                         type="email"
@@ -505,7 +535,9 @@ const Settings = () => {
 
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-medium">Confirm Password</span>
+                        <span className="label-text font-medium">
+                          Confirm Password
+                        </span>
                       </label>
                       <div className="relative">
                         <input
@@ -517,7 +549,9 @@ const Settings = () => {
                         />
                         <button
                           type="button"
-                          onClick={() => setShowEmailPassword(!showEmailPassword)}
+                          onClick={() =>
+                            setShowEmailPassword(!showEmailPassword)
+                          }
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content"
                         >
                           {showEmailPassword ? <FaEyeSlash /> : <FaEye />}
@@ -574,14 +608,18 @@ const Settings = () => {
                       type="checkbox"
                       className="toggle toggle-primary"
                       checked={notifications.emailNotifications}
-                      onChange={() => handleNotificationChange("emailNotifications")}
+                      onChange={() =>
+                        handleNotificationChange("emailNotifications")
+                      }
                     />
                   </div>
 
                   {/* Property Updates */}
                   <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
                     <div>
-                      <h3 className="font-semibold text-base-content">Property Updates</h3>
+                      <h3 className="font-semibold text-base-content">
+                        Property Updates
+                      </h3>
                       <p className="text-sm text-base-content/70">
                         Get notified about your property status changes
                       </p>
@@ -590,7 +628,9 @@ const Settings = () => {
                       type="checkbox"
                       className="toggle toggle-primary"
                       checked={notifications.propertyUpdates}
-                      onChange={() => handleNotificationChange("propertyUpdates")}
+                      onChange={() =>
+                        handleNotificationChange("propertyUpdates")
+                      }
                     />
                   </div>
 
@@ -608,14 +648,18 @@ const Settings = () => {
                       type="checkbox"
                       className="toggle toggle-primary"
                       checked={notifications.reviewNotifications}
-                      onChange={() => handleNotificationChange("reviewNotifications")}
+                      onChange={() =>
+                        handleNotificationChange("reviewNotifications")
+                      }
                     />
                   </div>
 
                   {/* Marketing Emails */}
                   <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
                     <div>
-                      <h3 className="font-semibold text-base-content">Marketing Emails</h3>
+                      <h3 className="font-semibold text-base-content">
+                        Marketing Emails
+                      </h3>
                       <p className="text-sm text-base-content/70">
                         Receive promotional offers and updates
                       </p>
@@ -624,14 +668,18 @@ const Settings = () => {
                       type="checkbox"
                       className="toggle toggle-primary"
                       checked={notifications.marketingEmails}
-                      onChange={() => handleNotificationChange("marketingEmails")}
+                      onChange={() =>
+                        handleNotificationChange("marketingEmails")
+                      }
                     />
                   </div>
 
                   {/* Weekly Digest */}
                   <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
                     <div>
-                      <h3 className="font-semibold text-base-content">Weekly Digest</h3>
+                      <h3 className="font-semibold text-base-content">
+                        Weekly Digest
+                      </h3>
                       <p className="text-sm text-base-content/70">
                         Get a weekly summary of your activities
                       </p>
@@ -647,7 +695,9 @@ const Settings = () => {
                   {/* Price Alerts */}
                   <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
                     <div>
-                      <h3 className="font-semibold text-base-content">Price Alerts</h3>
+                      <h3 className="font-semibold text-base-content">
+                        Price Alerts
+                      </h3>
                       <p className="text-sm text-base-content/70">
                         Get notified about price changes in your area
                       </p>
@@ -715,7 +765,9 @@ const Settings = () => {
                   {/* Show Email */}
                   <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
                     <div>
-                      <h3 className="font-semibold text-base-content">Show Email</h3>
+                      <h3 className="font-semibold text-base-content">
+                        Show Email
+                      </h3>
                       <p className="text-sm text-base-content/70">
                         Display your email on your public profile
                       </p>
@@ -724,14 +776,18 @@ const Settings = () => {
                       type="checkbox"
                       className="toggle toggle-primary"
                       checked={privacy.showEmail}
-                      onChange={(e) => handlePrivacyChange("showEmail", e.target.checked)}
+                      onChange={(e) =>
+                        handlePrivacyChange("showEmail", e.target.checked)
+                      }
                     />
                   </div>
 
                   {/* Show Phone */}
                   <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
                     <div>
-                      <h3 className="font-semibold text-base-content">Show Phone</h3>
+                      <h3 className="font-semibold text-base-content">
+                        Show Phone
+                      </h3>
                       <p className="text-sm text-base-content/70">
                         Display your phone number on your profile
                       </p>
@@ -740,7 +796,9 @@ const Settings = () => {
                       type="checkbox"
                       className="toggle toggle-primary"
                       checked={privacy.showPhone}
-                      onChange={(e) => handlePrivacyChange("showPhone", e.target.checked)}
+                      onChange={(e) =>
+                        handlePrivacyChange("showPhone", e.target.checked)
+                      }
                     />
                   </div>
 
@@ -767,7 +825,9 @@ const Settings = () => {
                   {/* Allow Messages */}
                   <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
                     <div>
-                      <h3 className="font-semibold text-base-content">Allow Messages</h3>
+                      <h3 className="font-semibold text-base-content">
+                        Allow Messages
+                      </h3>
                       <p className="text-sm text-base-content/70">
                         Allow other users to send you messages
                       </p>
@@ -788,7 +848,11 @@ const Settings = () => {
                   disabled={savingPrivacy}
                   className="btn btn-primary gap-2 mt-6"
                 >
-                  {savingPrivacy ? <FaSpinner className="animate-spin" /> : <FaSave />}
+                  {savingPrivacy ? (
+                    <FaSpinner className="animate-spin" />
+                  ) : (
+                    <FaSave />
+                  )}
                   Save Settings
                 </button>
               </div>
@@ -813,7 +877,9 @@ const Settings = () => {
 
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-base-content mb-4">Theme</h3>
+                    <h3 className="font-semibold text-base-content mb-4">
+                      Theme
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Light Theme */}
                       <button
@@ -829,7 +895,9 @@ const Settings = () => {
                             <FaSun className="text-2xl text-yellow-900" />
                           </div>
                           <div className="text-left">
-                            <h4 className="font-semibold text-base-content">Light Mode</h4>
+                            <h4 className="font-semibold text-base-content">
+                              Light Mode
+                            </h4>
                             <p className="text-sm text-base-content/70">
                               Bright and clean interface
                             </p>
@@ -854,7 +922,9 @@ const Settings = () => {
                             <FaMoon className="text-2xl text-slate-200" />
                           </div>
                           <div className="text-left">
-                            <h4 className="font-semibold text-base-content">Dark Mode</h4>
+                            <h4 className="font-semibold text-base-content">
+                              Dark Mode
+                            </h4>
                             <p className="text-sm text-base-content/70">
                               Easy on the eyes
                             </p>
@@ -869,7 +939,9 @@ const Settings = () => {
 
                   {/* Theme Preview */}
                   <div className="bg-base-200 p-6 rounded-lg">
-                    <h3 className="font-semibold text-base-content mb-3">Preview</h3>
+                    <h3 className="font-semibold text-base-content mb-3">
+                      Preview
+                    </h3>
                     <div className="bg-base-100 p-4 rounded-lg border border-base-300">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-12 h-12 bg-primary rounded-full"></div>
@@ -903,7 +975,9 @@ const Settings = () => {
                     <FaExclamationTriangle className="text-xl text-error" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-error">Danger Zone</h2>
+                    <h2 className="text-xl font-bold text-error">
+                      Danger Zone
+                    </h2>
                     <p className="text-sm text-base-content/70">
                       Irreversible actions - proceed with caution
                     </p>
@@ -921,13 +995,17 @@ const Settings = () => {
                       <p>
                         • Account created:{" "}
                         {user?.metadata?.creationTime
-                          ? new Date(user.metadata.creationTime).toLocaleDateString()
+                          ? new Date(
+                              user.metadata.creationTime
+                            ).toLocaleDateString()
                           : "N/A"}
                       </p>
                       <p>
                         • Email verified:{" "}
                         {user?.emailVerified ? (
-                          <span className="text-success font-semibold">Yes</span>
+                          <span className="text-success font-semibold">
+                            Yes
+                          </span>
                         ) : (
                           <span className="text-error font-semibold">No</span>
                         )}
@@ -944,8 +1022,8 @@ const Settings = () => {
                           Delete Account
                         </h3>
                         <p className="text-sm text-base-content/80 mb-4">
-                          Once you delete your account, there is no going back. Please be
-                          certain.
+                          Once you delete your account, there is no going back.
+                          Please be certain.
                         </p>
                         <div className="space-y-2 text-sm text-base-content/70 mb-4">
                           <p className="font-semibold text-base-content">
@@ -965,8 +1043,8 @@ const Settings = () => {
                     <div className="alert alert-error mb-4">
                       <FaExclamationTriangle />
                       <span className="text-sm">
-                        <strong>Warning:</strong> This action cannot be undone. All your
-                        data will be permanently lost.
+                        <strong>Warning:</strong> This action cannot be undone.
+                        All your data will be permanently lost.
                       </span>
                     </div>
 
